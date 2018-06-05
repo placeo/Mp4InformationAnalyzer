@@ -16,7 +16,7 @@ public:
 	virtual ~CMp4Information();
 	GtkWidget* generateMp4InformationView();
 	bool terminateMp4InformationView();
-
+	static gboolean alphaWindowExpose(GtkWidget* widget, GdkEventExpose *expose, gpointer data);
 private:
 	GtkWidget* scrolledWindow_ = nullptr;
 };
