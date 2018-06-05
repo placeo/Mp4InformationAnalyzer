@@ -5,8 +5,8 @@
  *      Author: placeo
  */
 
-#ifndef SRC_UI_CMP4ANALYZERUI_H_
-#define SRC_UI_CMP4ANALYZERUI_H_
+#ifndef SRC_UI_CMP4INFORMATIONANALYZERUI_H_
+#define SRC_UI_CMP4INFORMATIONANALYZERUI_H_
 
 #include <gtk/gtk.h>
 #include <string>
@@ -52,4 +52,4 @@ private:
 
 };
 
-#endif /* SRC_UI_CMP4ANALYZERUI_H_ */
+#endif /* SRC_UI_CMP4INFORMATIONANALYZERUI_H_ */

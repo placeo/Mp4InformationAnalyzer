@@ -6,8 +6,8 @@
  */
 
 #include <gdk/gdkkeysyms.h>
-#include "CMp4AnalyzerUi.h"
 #include "CMp4AnalyzerLogger.h"
+#include "CMp4InformationAnalyzerUi.h"
 
 const char* LogTag = "UI";
 
@@ -35,13 +35,13 @@ void CMp4AnalyzerUi::createMainUi(CMp4AnalyzerUi* mp4AnalyzerUi) {
 	GtkWidget* informationView = mp4AnalyzerUi->mp4Information_->generateMp4InformationView();
 	GtkWidget* binaryView = mp4AnalyzerUi->mp4Binary_->generateBinaryView();
 
-	gtk_window_set_title(GTK_WINDOW(mp4AnalyzerUi->mainWindow_), "MP4 Analyzer");
-    gtk_widget_set_size_request(GTK_WIDGET(mp4AnalyzerUi->mainWindow_), 640, 360);
+	gtk_window_set_title(GTK_WINDOW(mp4AnalyzerUi->mainWindow_), "MP4 Information Analyzer");
+    gtk_widget_set_size_request(GTK_WIDGET(mp4AnalyzerUi->mainWindow_), 900, 480);
     gtk_container_set_border_width (GTK_CONTAINER (mp4AnalyzerUi->mainWindow_), 0);
 
 
     gtk_widget_set_size_request(GTK_WIDGET(structureView), 200, -1);
-    gtk_widget_set_size_request(GTK_WIDGET(informationView), -1, -1);
+    gtk_widget_set_size_request(GTK_WIDGET(informationView), 400, -1);
     gtk_widget_set_size_request(GTK_WIDGET(binaryView), 300, -1);
 
 	gtk_container_add(GTK_CONTAINER(mp4AnalyzerUi->mainWindow_), mainBox);

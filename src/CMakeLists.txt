@@ -1,4 +1,4 @@
-set(BIN_NAME "mp4Analyzer")
+set(BIN_NAME "mp4InformationAnalyzer")
 	
 cmake_minimum_required(VERSION 3.7)
 
@@ -15,8 +15,8 @@ endif()
 
 
 set(SRC_LIST
-	mp4AnalyzerMain.cpp
-	ui/CMp4AnalyzerUi.cpp
+	mp4InformationAnalyzerMain.cpp
+	ui/CMp4InformationAnalyzerUi.cpp
 	ui/CMp4Binary.cpp
 	ui/CMp4Structure.cpp
 	ui/CMp4Information.cpp
@@ -30,7 +30,7 @@ set(PTHREAD pthread)
 set(JSONC_LIB json-c)
 
 #set(UI gtk-3 gdk-3 cairo)
-set(UI gtk-quartz-2.0 cairo)
+set(UI gtk-quartz-2.0 gdk_pixbuf-2.0)
 set(LIB_LIST
 	${GLIB_LIB}
 	${LOG4CPP_LIB}

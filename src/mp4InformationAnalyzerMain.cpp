@@ -9,7 +9,7 @@
 
 #include "CMp4AnalyzerLogger.h"
 #include "CMp4AnalyzerConfiguration.h"
-#include "CMp4AnalyzerUi.h"
+#include "ui/CMp4InformationAnalyzerUi.h"
 
 static const char* LogTag = "MAIN";
 
@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
-	TestNotice(LogTag, "Mp4 analyzer start");
+	TestNotice(LogTag, "Mp4 information analyzer start");
 
 	gtk_init(&argc, &argv);
 
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 
 	TestInfo(LogTag, "Running...");
 
-	TestNotice(LogTag, "Mp4 analyzer end");
+	TestNotice(LogTag, "Mp4 information analyzer end");
 
 	if(false == finalizeTesterLogger()) {
 		TestError(LogTag, "Failed to finalize tester logger");
