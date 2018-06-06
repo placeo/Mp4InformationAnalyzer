@@ -21,18 +21,18 @@ CMp4Information::~CMp4Information() {
 GtkWidget* CMp4Information::generateMp4InformationView() {
 	GtkWidget* box = nullptr;
 	GtkWidget* label = nullptr;
-	GdkPixbuf* sktLogoPixBuf = nullptr;
+	GdkPixbuf* logoPixBuf = nullptr;
 	GtkWidget* drawingArea = gtk_drawing_area_new();
 
 	scrolledWindow_ = gtk_scrolled_window_new(NULL, NULL);
 
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledWindow_), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	sktLogoPixBuf = gdk_pixbuf_new_from_xpm_data((const gchar **)sktLogo);
+	logoPixBuf = gdk_pixbuf_new_from_xpm_data((const gchar **)mp4InformationAnalyzerLogo);
 
-	g_signal_connect(drawingArea, "expose-event", G_CALLBACK(alphaWindowExpose), sktLogoPixBuf);
+	g_signal_connect(drawingArea, "expose-event", G_CALLBACK(alphaWindowExpose), logoPixBuf);
 
-	gtk_container_add(GTK_CONTAINER(scrolledWindow_), drawingArea);
-	// gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolledWindow_), logoImage);
+	//gtk_container_add(GTK_CONTAINER(scrolledWindow_), drawingArea);
+	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolledWindow_), drawingArea);
 	label = gtk_label_new("Information");
 	box = gtk_notebook_new();
 	gtk_notebook_append_page(GTK_NOTEBOOK(box), scrolledWindow_, label);
@@ -48,7 +48,7 @@ gboolean CMp4Information::alphaWindowExpose(GtkWidget* widget, GdkEventExpose* e
 	cairo_t *cr;
 	cairo_pattern_t *pattern;
 	int radius;
-	GdkPixbuf* sktLogoPixBuf = (GdkPixbuf*)data;
+	GdkPixbuf* logoPixBuf = (GdkPixbuf*)data;
 
 	cr = gdk_cairo_create (widget->window);
 
@@ -69,7 +69,7 @@ gboolean CMp4Information::alphaWindowExpose(GtkWidget* widget, GdkEventExpose* e
 	cairo_paint (cr);
 
 	cairo_pattern_add_color_stop_rgba (pattern, 0.0, 1.0, 0.75, 0.0, 1.0); /* solid orange */
-	cairo_pattern_add_color_stop_rgba (pattern, 1.0, 1.0, 0.75, 0.0, 0.0); /* transparent orange */
+//	cairo_pattern_add_color_stop_rgba (pattern, 1.0, 1.0, 0.75, 0.0, 0.0); /* transparent orange */
 
 	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
@@ -80,11 +80,12 @@ gboolean CMp4Information::alphaWindowExpose(GtkWidget* widget, GdkEventExpose* e
 	cairo_destroy (cr);
 
 	gdk_draw_pixbuf(widget->window, gtk_widget_get_style (widget)->black_gc,
-		sktLogoPixBuf,
+			logoPixBuf,
 		0, 0,
-		10, 10,
-		gdk_pixbuf_get_width (sktLogoPixBuf),
-		gdk_pixbuf_get_height (sktLogoPixBuf),
+		(widget->allocation.width - gdk_pixbuf_get_width(logoPixBuf)) / 2,
+		(widget->allocation.height - gdk_pixbuf_get_height(logoPixBuf)) / 2,
+		gdk_pixbuf_get_width(logoPixBuf),
+		gdk_pixbuf_get_height(logoPixBuf),
 		GDK_RGB_DITHER_NORMAL,
 		0, 0);
 	return FALSE;
