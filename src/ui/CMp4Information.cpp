@@ -9,6 +9,25 @@
 #include "CMp4Information.h"
 #include "xmp.h"
 
+static void
+oval_path (cairo_t *cr,
+           double xc, double yc,
+           double xr, double yr)
+{
+  cairo_save (cr);
+
+  cairo_translate (cr, xc, yc);
+  cairo_scale (cr, 1.0, yr / xr);
+  cairo_move_to (cr, xr, 0.0);
+  cairo_arc (cr,
+         0, 0,
+         xr,
+         0, 2 * G_PI);
+  cairo_close_path (cr);
+
+  cairo_restore (cr);
+}
+
 CMp4Information::CMp4Information() {
 	// TODO Auto-generated constructor stub
 
@@ -29,13 +48,12 @@ GtkWidget* CMp4Information::generateMp4InformationView() {
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledWindow_), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	logoPixBuf = gdk_pixbuf_new_from_xpm_data((const gchar **)mp4InformationAnalyzerLogo);
 
-	g_signal_connect(drawingArea, "expose-event", G_CALLBACK(alphaWindowExpose), logoPixBuf);
-
-	//gtk_container_add(GTK_CONTAINER(scrolledWindow_), drawingArea);
-	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolledWindow_), drawingArea);
+	gtk_container_add(GTK_CONTAINER(scrolledWindow_), drawingArea);
 	label = gtk_label_new("Information");
 	box = gtk_notebook_new();
 	gtk_notebook_append_page(GTK_NOTEBOOK(box), scrolledWindow_, label);
+
+	g_signal_connect(drawingArea, "draw", G_CALLBACK(drawCallback), logoPixBuf);
 
 	return box;
 }
@@ -44,49 +62,35 @@ bool CMp4Information::terminateMp4InformationView() {
 	return true;
 }
 
-gboolean CMp4Information::alphaWindowExpose(GtkWidget* widget, GdkEventExpose* expose, gpointer data) {
-	cairo_t *cr;
-	cairo_pattern_t *pattern;
-	int radius;
+gboolean CMp4Information::drawCallback(GtkWidget* widget, cairo_t* cr, gpointer data) {
+	cairo_surface_t* overlay;
+	cairo_t* overlay_cr;
+	GtkAllocation allocation;
 	GdkPixbuf* logoPixBuf = (GdkPixbuf*)data;
+	int width = gtk_widget_get_allocated_width(widget);
+	int height = gtk_widget_get_allocated_height(widget);
+	gtk_widget_get_allocation (widget, &allocation);
 
-	cr = gdk_cairo_create (widget->window);
+	overlay = cairo_surface_create_similar (cairo_get_target (cr),
+					  CAIRO_CONTENT_COLOR_ALPHA,
+					  width, height);
 
-	radius = MIN (widget->allocation.width, widget->allocation.height) / 2;
-	pattern = cairo_pattern_create_radial (widget->allocation.width / 2,
-		widget->allocation.height / 2,
-		0.0,
-		widget->allocation.width / 2,
-		widget->allocation.height / 2,
-		radius * 1.33);
+	cairo_rectangle(cr, 0, 0, width, height);
+	cairo_set_source_rgb(cr, 1.0, 0.75, 0.0);
+	cairo_fill(cr);
 
-	if (gdk_screen_get_rgba_colormap (gtk_widget_get_screen (widget)) && gtk_widget_is_composited (widget))
-		cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 0.0); /* transparent */
-	else
-		cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* opaque white */
+	overlay_cr = cairo_create(overlay);
 
-	cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+	cairo_set_operator (overlay_cr, CAIRO_OPERATOR_OVER);
+	gdk_cairo_set_source_pixbuf(overlay_cr, logoPixBuf, (allocation.width - gdk_pixbuf_get_width(logoPixBuf)) / 2, (allocation.height - gdk_pixbuf_get_height(logoPixBuf)) / 2);
+	cairo_paint (overlay_cr);
+
+	cairo_destroy (overlay_cr);
+
+	cairo_set_source_surface (cr, overlay, 0, 0);
 	cairo_paint (cr);
 
-	cairo_pattern_add_color_stop_rgba (pattern, 0.0, 1.0, 0.75, 0.0, 1.0); /* solid orange */
-//	cairo_pattern_add_color_stop_rgba (pattern, 1.0, 1.0, 0.75, 0.0, 0.0); /* transparent orange */
+	cairo_surface_destroy (overlay);
 
-	cairo_set_source (cr, pattern);
-	cairo_pattern_destroy (pattern);
-
-	cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
-	cairo_paint (cr);
-
-	cairo_destroy (cr);
-
-	gdk_draw_pixbuf(widget->window, gtk_widget_get_style (widget)->black_gc,
-			logoPixBuf,
-		0, 0,
-		(widget->allocation.width - gdk_pixbuf_get_width(logoPixBuf)) / 2,
-		(widget->allocation.height - gdk_pixbuf_get_height(logoPixBuf)) / 2,
-		gdk_pixbuf_get_width(logoPixBuf),
-		gdk_pixbuf_get_height(logoPixBuf),
-		GDK_RGB_DITHER_NORMAL,
-		0, 0);
 	return FALSE;
 }

@@ -23,14 +23,14 @@ CMp4AnalyzerUi::~CMp4AnalyzerUi() {
 
 void CMp4AnalyzerUi::createMainUi(CMp4AnalyzerUi* mp4AnalyzerUi) {
 	mp4AnalyzerUi->mainWindow_ = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	GtkWidget* mainBox = gtk_vbox_new(FALSE, 0);
+	GtkWidget* mainBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
 	mp4AnalyzerUi->accelGroup_ = gtk_accel_group_new ();
 	gtk_window_add_accel_group(GTK_WINDOW (mp4AnalyzerUi->mainWindow_), mp4AnalyzerUi->accelGroup_);
 
 	GtkWidget* menuBar = createMenuBar(mp4AnalyzerUi);
 	GtkWidget* toolbar = createToolBar(mp4AnalyzerUi);
-	GtkWidget* contentsBox = gtk_hbox_new(FALSE, 2);
+	GtkWidget* contentsBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
 	GtkWidget* structureView = mp4AnalyzerUi->mp4Structure_->generateStructureTreeView();
 	GtkWidget* informationView = mp4AnalyzerUi->mp4Information_->generateMp4InformationView();
 	GtkWidget* binaryView = mp4AnalyzerUi->mp4Binary_->generateBinaryView();
@@ -72,8 +72,8 @@ void CMp4AnalyzerUi::fileOpenCallback(gpointer userData) {
 	dialog = gtk_file_chooser_dialog_new ("Select file",
 			GTK_WINDOW (mp4AnalyzeUi->mainWindow_),
 			GTK_FILE_CHOOSER_ACTION_OPEN,
-			GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-			GTK_STOCK_OPEN, GTK_RESPONSE_OK,
+			("_Cancel"), GTK_RESPONSE_CANCEL,
+			("_Open"), GTK_RESPONSE_OK,
 			NULL);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 	response = gtk_dialog_run (GTK_DIALOG (dialog));
@@ -83,6 +83,7 @@ void CMp4AnalyzerUi::fileOpenCallback(gpointer userData) {
 		mp4AnalyzeUi->loadFile(openFileName, mp4AnalyzeUi);
 		g_free (openFileName);
 	}
+	gtk_widget_set_size_request(GTK_WIDGET(dialog), 400, 300);
 	gtk_widget_destroy (dialog);
 }
 
@@ -116,12 +117,13 @@ GtkWidget* CMp4AnalyzerUi::createMenuBar(CMp4AnalyzerUi* mp4AnalyzerUi) {
 
 	menuBar = gtk_menu_bar_new();
 
-	fileMenuItem = gtk_image_menu_item_new_from_stock(GTK_STOCK_HOME, mp4AnalyzerUi->accelGroup_);
+	fileMenuItem = gtk_menu_item_new_with_mnemonic(("_File"));
+			//("media-playback-stop", GTK_ICON_SIZE_BUTTON); // gtk_image_menu_item_new_from_(GTK_STOCK_HOME, mp4AnalyzerUi->accelGroup_);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuBar), fileMenuItem);
 	fileMenu = createFileMenu(mp4AnalyzerUi);
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(fileMenuItem), fileMenu);
 
-	helpMenuItem = gtk_image_menu_item_new_from_stock(GTK_STOCK_HELP, mp4AnalyzerUi->accelGroup_);
+	helpMenuItem = gtk_menu_item_new_with_mnemonic(("_Help"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuBar), helpMenuItem);
 	helpMenu = createHelpMenu(mp4AnalyzerUi);
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(helpMenuItem), helpMenu);
@@ -137,19 +139,19 @@ GtkWidget* CMp4AnalyzerUi::createFileMenu(CMp4AnalyzerUi* mp4AnalyzerUi) {
     GtkWidget* quitItem;
 
     menu = gtk_menu_new ();
-    fileOpenItem = gtk_image_menu_item_new_from_stock(GTK_STOCK_OPEN, mp4AnalyzerUi->accelGroup_);
-    fileCloseItem = gtk_image_menu_item_new_from_stock(GTK_STOCK_CLOSE, mp4AnalyzerUi->accelGroup_);
+    fileOpenItem = gtk_menu_item_new_with_mnemonic(("_Open"));
+    fileCloseItem = gtk_menu_item_new_with_mnemonic(("_Close"));
     separatorItem = gtk_separator_menu_item_new();
-    quitItem = gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, mp4AnalyzerUi->accelGroup_);
+    quitItem = gtk_menu_item_new_with_mnemonic(("_Quit"));
 
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), fileOpenItem);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), fileCloseItem);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), separatorItem);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), quitItem);
 
-    gtk_widget_add_accelerator(fileOpenItem, "activate", mp4AnalyzerUi->accelGroup_, GDK_o, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    gtk_widget_add_accelerator(fileCloseItem, "activate", mp4AnalyzerUi->accelGroup_, GDK_c, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    gtk_widget_add_accelerator(quitItem, "activate", mp4AnalyzerUi->accelGroup_, GDK_q, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_add_accelerator(fileOpenItem, "activate", mp4AnalyzerUi->accelGroup_, GDK_KEY_o, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_add_accelerator(fileCloseItem, "activate", mp4AnalyzerUi->accelGroup_, GDK_KEY_c, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_add_accelerator(quitItem, "activate", mp4AnalyzerUi->accelGroup_, GDK_KEY_q, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
 	g_signal_connect_swapped(fileOpenItem, "activate", G_CALLBACK(CMp4AnalyzerUi::fileOpenCallback), mp4AnalyzerUi);
 	g_signal_connect_swapped(fileCloseItem, "activate", G_CALLBACK(CMp4AnalyzerUi::fileCloseCallback), mp4AnalyzerUi);
@@ -163,11 +165,11 @@ GtkWidget* CMp4AnalyzerUi::createHelpMenu(CMp4AnalyzerUi* mp4AnalyzerUi) {
     GtkWidget* aboutItem;
 
     menu = gtk_menu_new ();
-    aboutItem = gtk_image_menu_item_new_from_stock(GTK_STOCK_ABOUT, mp4AnalyzerUi->accelGroup_);
+    aboutItem = gtk_menu_item_new_with_mnemonic(("_About"));
 
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), aboutItem);
 
-    gtk_widget_add_accelerator(aboutItem, "activate", mp4AnalyzerUi->accelGroup_, GDK_a, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_add_accelerator(aboutItem, "activate", mp4AnalyzerUi->accelGroup_, GDK_KEY_a, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
     g_signal_connect_swapped(aboutItem, "activate", G_CALLBACK(CMp4AnalyzerUi::aboutCallback), mp4AnalyzerUi);
 
@@ -175,12 +177,29 @@ GtkWidget* CMp4AnalyzerUi::createHelpMenu(CMp4AnalyzerUi* mp4AnalyzerUi) {
 }
 
 GtkWidget* CMp4AnalyzerUi::createToolBar(CMp4AnalyzerUi* mp4AnalyzerUi) {
-	GtkWidget* toolBar;
-	toolBar = gtk_toolbar_new();
-	gtk_toolbar_insert_stock(GTK_TOOLBAR (toolBar), GTK_STOCK_OPEN, "Open file", "Toolbar/Open", G_CALLBACK (CMp4AnalyzerUi::toolBarFileOpenCallback), mp4AnalyzerUi, -1);
-	gtk_toolbar_insert_stock(GTK_TOOLBAR (toolBar), GTK_STOCK_CLOSE, "Close file", "Toolbar/Close", G_CALLBACK (CMp4AnalyzerUi::toolBarFileCloseCallback), mp4AnalyzerUi, -1);
+	GtkWidget* toolBar = nullptr;
+//	GtkWidget* grid = nullptr;
+	GtkToolItem* item = nullptr;
 
-    gtk_toolbar_append_space(GTK_TOOLBAR(toolBar));
+	toolBar = gtk_toolbar_new();
+
+	item = gtk_tool_button_new(NULL, NULL);
+	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(item), "document-open");
+	g_signal_connect(GTK_TOOL_BUTTON(item), "clicked", G_CALLBACK(toolBarFileOpenCallback), mp4AnalyzerUi);
+	gtk_toolbar_insert(GTK_TOOLBAR(toolBar), item, -1);
+
+	item = gtk_tool_button_new(NULL, NULL);
+	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(item), "application-exit");
+	g_signal_connect(GTK_TOOL_BUTTON(item), "clicked", G_CALLBACK(quitCallback), mp4AnalyzerUi);
+	gtk_toolbar_insert(GTK_TOOLBAR(toolBar), item, -1);
+//	gtk_grid_attach(GTK_GRID(grid), toolBar, 0, 0, 2, 1);
+
+//	item = gtk_menu_tool_button_new(NULL, NULL);
+
+//	gtk_toolbar_insert_stock(GTK_TOOLBAR (toolBar), GTK_STOCK_OPEN, "Open file", "Toolbar/Open", G_CALLBACK (CMp4AnalyzerUi::toolBarFileOpenCallback), mp4AnalyzerUi, -1);
+//	gtk_toolbar_insert_stock(GTK_TOOLBAR (toolBar), GTK_STOCK_CLOSE, "Close file", "Toolbar/Close", G_CALLBACK (CMp4AnalyzerUi::toolBarFileCloseCallback), mp4AnalyzerUi, -1);
+
+//  gtk_toolbar_append_space(GTK_TOOLBAR(toolBar));
     return toolBar;
 }
 

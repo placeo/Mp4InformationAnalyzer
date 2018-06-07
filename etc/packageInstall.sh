@@ -1,0 +1,1 @@
+brew install adwaita-icon-theme
