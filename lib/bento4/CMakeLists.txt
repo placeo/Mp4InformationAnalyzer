@@ -27,13 +27,16 @@ file(GLOB AP4_SOURCES
   ${SOURCE_SYSTEM}/StdC/*.cpp
 )
 
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/target/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/target/bin)
+
 if(WIN32)
   set(AP4_SOURCES ${AP4_SOURCES} ${SOURCE_SYSTEM}/Win32/Ap4Win32Random.cpp)
 else()
   set(AP4_SOURCES ${AP4_SOURCES} ${SOURCE_SYSTEM}/Posix/Ap4PosixRandom.cpp)
 endif()
 
-add_library(ap4 STATIC ${AP4_SOURCES})
+add_library(ap4 SHARED ${AP4_SOURCES})
 
 # Includes
 include_directories(

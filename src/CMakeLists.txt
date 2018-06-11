@@ -31,11 +31,13 @@ set(JSONC_LIB json-c)
 
 #set(UI gtk-quartz-2.0 gdk_pixbuf-2.0 gdk-quartz-2.0 cairo)
 set(UI gtk-3 gdk-3 cairo pango-1.0 gdk_pixbuf-2.0)
+set(BENTO4 ap4)
 set(LIB_LIST
 	${GLIB_LIB}
 	${LOG4CPP_LIB}
 	${JSONC_LIB}
 	${UI}
+	${BENTO4}
 )
 
 message(STATUS "SYSTEM : ${CMAKE_SYSTEM_NAME}")

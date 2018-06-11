@@ -30,6 +30,7 @@ string(STRIP ${GIT_VERSION} GIT_VERSION)
 message(STATUS "Git Version[${GIT_RESULT}] : ${GIT_VERSION}")
 set(GIT_VERSION ${GIT_VERSION})
 
+add_subdirectory(lib)
 add_subdirectory(src)
 #add_subdirectory(test)
 	
