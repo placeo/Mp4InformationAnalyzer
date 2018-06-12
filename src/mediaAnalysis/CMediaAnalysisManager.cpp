@@ -59,7 +59,7 @@ bool CMediaAnalysisManager::generateMp4AnalysisJson() {
 //	inspector = new AP4_JsonInspector(*output);
 	inspector = new AP4_JsonInspector(*outputByteStream);
 
-	inspector->SetVerbosity(1);
+	inspector->SetVerbosity(3);
 
 	AP4_Atom* atom;
 	AP4_DefaultAtomFactory atom_factory;
@@ -82,8 +82,9 @@ bool CMediaAnalysisManager::generateMp4AnalysisJson() {
 	}
 
 	readJsonData_ = string(reinterpret_cast<char*>(const_cast<unsigned char*>(outputByteStream->GetData())));
-	readJsonData_.replace(outputByteStream->GetDataSize(), 1, "\n]\0");
 
+	readJsonData_.resize(outputByteStream->GetDataSize());
+	readJsonData_ += readJsonData_ + "\n]\n";
 	TestInfo(LogTag, "Json Dump :\n%s\n", readJsonData_.data());
 
 	if (input) input->Release();
