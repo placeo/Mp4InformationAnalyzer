@@ -8,6 +8,7 @@
 #include <gdk/gdkkeysyms.h>
 #include "CMp4AnalyzerLogger.h"
 #include "CMp4InformationAnalyzerUi.h"
+#include "CMediaAnalysisManager.h"
 
 const char* LogTag = "UI";
 
@@ -207,8 +208,10 @@ bool CMp4AnalyzerUi::loadFile(const char* openFileName, gpointer data) {
 	CMp4AnalyzerUi* mp4AnalyzerUi = static_cast<CMp4AnalyzerUi*>(data);
 	GtkWidget *errorDialog = nullptr;
 	GError *error = nullptr;
+	int returnValue = 0;
 
-	// read file
+	// open and close file
+
 	if(nullptr == (mp4AnalyzerUi->filePointer_ = fopen(openFileName, "rb"))) {
 		errorDialog = gtk_message_dialog_new (GTK_WINDOW(mp4AnalyzerUi->mainWindow_),
 				GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -224,6 +227,16 @@ bool CMp4AnalyzerUi::loadFile(const char* openFileName, gpointer data) {
 		mp4AnalyzerUi->fileSize_ = ftell(mp4AnalyzerUi->filePointer_);
 		rewind(mp4AnalyzerUi->filePointer_);
 		TestInfo(LogTag, "Load file name : %s", openFileName);
+	}
+
+	if((returnValue = fclose(mp4AnalyzerUi->filePointer_)) != 0) {
+		TestError(LogTag, "Failed to close file, return value : %d", returnValue);
+	}
+
+	CMediaAnalysisManager::getInstance()->setFileLocation(string(openFileName));
+	if(false == CMediaAnalysisManager::getInstance()->generateMp4AnalysisJson()) {
+		TestError(LogTag, "Failed to generate mp4 analysis json");
+		return false;
 	}
 
 	if (errorDialog)

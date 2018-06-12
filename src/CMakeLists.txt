@@ -20,6 +20,7 @@ set(SRC_LIST
 	ui/CMp4Binary.cpp
 	ui/CMp4Structure.cpp
 	ui/CMp4Information.cpp
+	mediaAnalysis/CMediaAnalysisManager.cpp
 	logger/CMp4AnalyzerLogger.cpp
 	configuration/CMp4AnalyzerConfiguration.cpp
 )
@@ -42,8 +43,10 @@ set(LIB_LIST
 
 message(STATUS "SYSTEM : ${CMAKE_SYSTEM_NAME}")
 
+include_directories(include)
 include_directories(logger)
 include_directories(ui)
+include_directories(mediaAnalysis)
 include_directories(configuration)
 
 include_directories(/usr/local/include/glib-2.0)	
