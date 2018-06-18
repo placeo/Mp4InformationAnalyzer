@@ -32,7 +32,7 @@ void CMp4AnalyzerUi::createMainUi(CMp4AnalyzerUi* mp4AnalyzerUi) {
 	GtkWidget* menuBar = createMenuBar(mp4AnalyzerUi);
 	GtkWidget* toolbar = createToolBar(mp4AnalyzerUi);
 	GtkWidget* contentsBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
-	GtkWidget* structureView = mp4AnalyzerUi->mp4Structure_->generateStructureTreeView();
+	GtkWidget* structureView = mp4AnalyzerUi->mp4Structure_->initializeTreeView();
 	GtkWidget* informationView = mp4AnalyzerUi->mp4Information_->generateMp4InformationView();
 	GtkWidget* binaryView = mp4AnalyzerUi->mp4Binary_->generateBinaryView();
 
@@ -83,6 +83,10 @@ void CMp4AnalyzerUi::fileOpenCallback(gpointer userData) {
 		openFileName = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
 		mp4AnalyzeUi->loadFile(openFileName, mp4AnalyzeUi);
 		g_free (openFileName);
+	}
+	CMediaAnalysisManager::getInstance()->extractFileName();
+	if(false == mp4AnalyzeUi->getMp4Structure()->generateStructureTreeView()) {
+		TestError(LogTag, "Failed to generate structure tree view");
 	}
 	gtk_widget_set_size_request(GTK_WIDGET(dialog), 400, 300);
 	gtk_widget_destroy (dialog);

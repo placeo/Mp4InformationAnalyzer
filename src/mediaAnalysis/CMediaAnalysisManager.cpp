@@ -94,3 +94,11 @@ bool CMediaAnalysisManager::generateMp4AnalysisJson() {
 
 	return true;
 }
+
+bool CMediaAnalysisManager::extractFileName() {
+	string key = "/";
+	size_t found = fileLocation_.rfind(key);
+	fileName_ = fileLocation_.substr(found + 1);
+	TestInfo(LogTag, "File Name : %s", fileName_.data());
+	return true;
+}

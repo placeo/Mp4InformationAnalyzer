@@ -39,6 +39,18 @@ public:
 
 	static bool loadFile(const char* openFileName, gpointer data);
 
+	CMp4Binary* getMp4Binary() const {
+		return mp4Binary_;
+	}
+
+	CMp4Information* getMp4Information() const {
+		return mp4Information_;
+	}
+
+	CMp4Structure* getMp4Structure() const {
+		return mp4Structure_;
+	}
+
 private:
 	GtkWidget* mainWindow_ = nullptr;
 	GtkAccelGroup* accelGroup_ = nullptr;

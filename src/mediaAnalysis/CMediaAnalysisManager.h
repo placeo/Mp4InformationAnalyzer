@@ -38,10 +38,20 @@ public:
 	}
 
 	bool generateMp4AnalysisJson();
+	bool extractFileName();
+
+	string getFileName() const {
+		return fileName_;
+	}
+
+	void setFileName(string fileName) {
+		fileName_ = fileName;
+	}
 
 private:
 	static CMediaAnalysisManager* pInstance_;
 	string fileLocation_ = "";
+	string fileName_ = "";
 	string readJsonData_ = "";
 };
 

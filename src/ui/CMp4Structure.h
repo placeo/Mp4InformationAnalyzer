@@ -14,7 +14,8 @@ class CMp4Structure {
 public:
 	CMp4Structure();
 	virtual ~CMp4Structure();
-	GtkWidget* generateStructureTreeView();
+	GtkWidget* initializeTreeView();
+	bool generateStructureTreeView();
 	bool terminateStructureTreeView();
 
 	static void treeViewSelectionCallback(GtkTreeSelection* treeSelection, GtkTreeModel* treeModel);
@@ -24,6 +25,7 @@ private:
 	GtkWidget* scrolledWindow_ = nullptr;
 	GtkWidget* structureTreeView_ = nullptr;
 	GtkTreeStore* structureTreeModel_ = nullptr;
+	GtkTreeSelection* treeSelection_ = nullptr;
 };
 
 #endif /* SRC_UI_CMP4STRUCTURE_H_ */
