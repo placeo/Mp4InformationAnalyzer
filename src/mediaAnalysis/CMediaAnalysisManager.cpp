@@ -5,12 +5,14 @@
  *      Author: placeo
  */
 
+#include <json-c/json.h>
 #include "Ap4.h"
 #include "CMediaAnalysisManager.h"
 #include "CMp4AnalyzerLogger.h"
 
 CMediaAnalysisManager* CMediaAnalysisManager::pInstance_ = NULL;
 static const char* LogTag = "MEDIA_ANALYSIS_MANAGER";
+static const char* Mp4InformationFile = "./mp4information.json";
 
 CMediaAnalysisManager::CMediaAnalysisManager() {
 	// TODO Auto-generated constructor stub
@@ -24,15 +26,12 @@ CMediaAnalysisManager::~CMediaAnalysisManager() {
 bool CMediaAnalysisManager::generateMp4AnalysisJson() {
 	// init the variables
 	AP4_ByteStream* input = nullptr;
-	// AP4_ByteStream* output = nullptr;
-	AP4_MemoryByteStream* outputByteStream = nullptr;
+	AP4_ByteStream* output = nullptr;
 	AP4_AtomInspector* inspector = NULL;
 	AP4_Result result;
 	unsigned long long int readDataSize = 0;
 
 	result = AP4_FileByteStream::Create(fileLocation_.data(), AP4_FileByteStream::STREAM_MODE_READ, input);
-	outputByteStream = new AP4_MemoryByteStream();
-	outputByteStream->AddReference();
 
 	if(AP4_FAILED(result)) {
 		TestError(LogTag, "Cannot open input, result : %d", result);
@@ -53,13 +52,11 @@ bool CMediaAnalysisManager::generateMp4AnalysisJson() {
 
 	TestInfo(LogTag, "read data size : %d", readDataSize);
 
-//	AP4_FileByteStream::Create("-stdout", AP4_FileByteStream::STREAM_MODE_WRITE, output);
-//	AP4_FileByteStream::Create("jsonResult", AP4_FileByteStream::STREAM_MODE_WRITE, output);
+	AP4_FileByteStream::Create(Mp4InformationFile, AP4_FileByteStream::STREAM_MODE_WRITE, output);
 
-//	inspector = new AP4_JsonInspector(*output);
-	inspector = new AP4_JsonInspector(*outputByteStream);
+	inspector = new AP4_JsonInspector(*output);
 
-	inspector->SetVerbosity(3);
+	inspector->SetVerbosity(0);
 
 	AP4_Atom* atom;
 	AP4_DefaultAtomFactory atom_factory;
@@ -81,16 +78,10 @@ bool CMediaAnalysisManager::generateMp4AnalysisJson() {
 		delete atom;
 	}
 
-	readJsonData_ = string(reinterpret_cast<char*>(const_cast<unsigned char*>(outputByteStream->GetData())));
-
-	readJsonData_.resize(outputByteStream->GetDataSize());
-	readJsonData_ += readJsonData_ + "\n]\n";
-	TestInfo(LogTag, "Json Dump :\n%s\n", readJsonData_.data());
+	if(output) output->Release();
 
 	if (input) input->Release();
 	delete inspector;
-	outputByteStream->Release();
-//	delete outputByteStream;
 
 	return true;
 }
@@ -100,5 +91,88 @@ bool CMediaAnalysisManager::extractFileName() {
 	size_t found = fileLocation_.rfind(key);
 	fileName_ = fileLocation_.substr(found + 1);
 	TestInfo(LogTag, "File Name : %s", fileName_.data());
+	return true;
+}
+
+bool CMediaAnalysisManager::retrieveMediaInformation() {
+	FILE* filePointer = NULL;
+	long int fileSize = 0;
+	int returnValue = 0;
+	char* configurationMessage = NULL;
+
+	filePointer = fopen(Mp4InformationFile, "r");
+	if(NULL == filePointer) {
+		TestError(LogTag, "Mp4 information file open error");
+		return false;
+	}
+
+	fseek(filePointer, 0, SEEK_END);
+	fileSize = ftell(filePointer);
+
+	configurationMessage = (char*)calloc(fileSize+1, 1);
+	if(NULL == configurationMessage) {
+		TestError(LogTag, "Mp4 information memory allocation error");
+		if(0 != fclose(filePointer)) {
+			TestError(LogTag, "Mp4 information file closing error");
+		}
+		return false;
+	}
+
+	rewind(filePointer);
+	returnValue = fread(configurationMessage, 1, fileSize, filePointer);
+	if(returnValue <= 0) {
+		TestError(LogTag, "Mp4 information read error");
+		if(0 != fclose(filePointer)) {
+			TestError(LogTag, "Mp4 information file closing error");
+		}
+		return false;
+	}
+
+	if(false == parseMediaInformation(configurationMessage)) {
+		TestError(LogTag, "Mp4 information file parsing error");
+		if(0 != fclose(filePointer)) {
+			TestError(LogTag, "Mp4 information file closing error");
+		}
+		free(configurationMessage);
+		return false;
+	}
+
+	free(configurationMessage);
+
+	if(0 != fclose(filePointer)) {
+		TestError(LogTag, "Mp4 information file closing error");
+		return false;
+	}
+
+	return true;
+}
+
+bool CMediaAnalysisManager::parseMediaInformation(const char* mediaInformation) {
+	json_object* jsonData = json_tokener_parse(mediaInformation);
+	if(NULL == jsonData) {
+		TestError(LogTag, "Failed to tokenize json message");
+		json_object_put(jsonData);
+		return false;
+	}
+	else {
+		firstLayerCount_ = json_object_array_length(jsonData);
+		for(int i=0; i < firstLayerCount_; i++) {
+			json_object* jsonFirstLayerObject = nullptr;
+			json_object* jsonFirstLayerName = nullptr;
+
+			string Level0NameString = "";
+
+			jsonFirstLayerObject = json_object_array_get_idx(jsonData, i);
+
+			if(0 == json_object_object_get_ex(jsonFirstLayerObject, "name", &jsonFirstLayerName)) {
+				TestError(LogTag, "Failed to get first layer name");
+				return false;
+			}
+			else {
+				Level0NameString = string(json_object_get_string(jsonFirstLayerName));
+				TestInfo(LogTag, "Level 0 name : %s", Level0NameString.data());
+			}
+		}
+	}
 	return true;
 }

@@ -39,6 +39,8 @@ public:
 
 	bool generateMp4AnalysisJson();
 	bool extractFileName();
+	bool retrieveMediaInformation();
+	bool parseMediaInformation(const char* mediaInformation);
 
 	string getFileName() const {
 		return fileName_;
@@ -48,11 +50,17 @@ public:
 		fileName_ = fileName;
 	}
 
+	string getReadJsonData() {
+		return readJsonData_;
+	}
+
 private:
 	static CMediaAnalysisManager* pInstance_;
 	string fileLocation_ = "";
 	string fileName_ = "";
 	string readJsonData_ = "";
+
+	int	firstLayerCount_ = 0;
 };
 
 #endif /* SRC_MEDIAANALYSIS_CMEDIAANALYSISMANAGER_H_ */

@@ -214,8 +214,11 @@ bool CMp4AnalyzerUi::loadFile(const char* openFileName, gpointer data) {
 	GError *error = nullptr;
 	int returnValue = 0;
 
-	// open and close file
+	if(false == mp4AnalyzerUi->getMp4Structure()->terminateStructureTreeView()) {
+		TestError(LogTag, "Failed to terminate structure tree view");
+	}
 
+	// open and close file
 	if(nullptr == (mp4AnalyzerUi->filePointer_ = fopen(openFileName, "rb"))) {
 		errorDialog = gtk_message_dialog_new (GTK_WINDOW(mp4AnalyzerUi->mainWindow_),
 				GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -241,6 +244,10 @@ bool CMp4AnalyzerUi::loadFile(const char* openFileName, gpointer data) {
 	if(false == CMediaAnalysisManager::getInstance()->generateMp4AnalysisJson()) {
 		TestError(LogTag, "Failed to generate mp4 analysis json");
 		return false;
+	}
+
+	if(false == CMediaAnalysisManager::getInstance()->retrieveMediaInformation()) {
+		TestError(LogTag, "Failed to parse media information");
 	}
 
 	if (errorDialog)
