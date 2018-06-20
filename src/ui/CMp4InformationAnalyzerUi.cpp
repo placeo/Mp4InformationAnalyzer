@@ -197,14 +197,7 @@ GtkWidget* CMp4AnalyzerUi::createToolBar(CMp4AnalyzerUi* mp4AnalyzerUi) {
 	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(item), "application-exit");
 	g_signal_connect(GTK_TOOL_BUTTON(item), "clicked", G_CALLBACK(quitCallback), mp4AnalyzerUi);
 	gtk_toolbar_insert(GTK_TOOLBAR(toolBar), item, -1);
-//	gtk_grid_attach(GTK_GRID(grid), toolBar, 0, 0, 2, 1);
 
-//	item = gtk_menu_tool_button_new(NULL, NULL);
-
-//	gtk_toolbar_insert_stock(GTK_TOOLBAR (toolBar), GTK_STOCK_OPEN, "Open file", "Toolbar/Open", G_CALLBACK (CMp4AnalyzerUi::toolBarFileOpenCallback), mp4AnalyzerUi, -1);
-//	gtk_toolbar_insert_stock(GTK_TOOLBAR (toolBar), GTK_STOCK_CLOSE, "Close file", "Toolbar/Close", G_CALLBACK (CMp4AnalyzerUi::toolBarFileCloseCallback), mp4AnalyzerUi, -1);
-
-//  gtk_toolbar_append_space(GTK_TOOLBAR(toolBar));
     return toolBar;
 }
 
@@ -250,8 +243,7 @@ bool CMp4AnalyzerUi::loadFile(const char* openFileName, gpointer data) {
 		TestError(LogTag, "Failed to parse media information");
 	}
 
-	if (errorDialog)
-	{
+	if (errorDialog)	{
 	  g_signal_connect (errorDialog, "response", G_CALLBACK (gtk_widget_destroy), NULL);
 	  gtk_widget_show (errorDialog);
 	  return false;

@@ -97,7 +97,8 @@ public:
                            AP4_UI08    /* version     */,
                            AP4_UI32    /* flags       */,
                            AP4_Size    /* header_size */,
-                           AP4_UI64    /*size         */) {}
+                           AP4_UI64    /*size         */,
+						   AP4_UI64    offset) {}
     virtual void EndAtom() {}
     virtual void StartDescriptor(const char* /* name        */,
                                  AP4_Size    /* header_size */,
@@ -142,7 +143,8 @@ public:
                    AP4_UI08    version,
                    AP4_UI32    flags,
                    AP4_Size    header_size,
-                   AP4_UI64    size);
+                   AP4_UI64    size,
+				   AP4_UI64    offset);
     void EndAtom();
     void StartDescriptor(const char* name,
                          AP4_Size    header_size,
@@ -172,7 +174,8 @@ public:
                    AP4_UI08    version,
                    AP4_UI32    flags,
                    AP4_Size    header_size,
-                   AP4_UI64    size);
+                   AP4_UI64    size,
+				   AP4_UI64    offset);
     void EndAtom();
     void StartDescriptor(const char* name,
                          AP4_Size    header_size,
@@ -278,12 +281,21 @@ public:
      */ 
     virtual AP4_Atom* Clone();
 
+	AP4_UI64 getOffset() const {
+		return offset_;
+	}
+
+	void setOffset(AP4_UI64 offset) {
+		offset_ = offset;
+	}
+
  protected:
     // members
     Type            m_Type;
     AP4_UI32        m_Size32; 
     AP4_UI64        m_Size64; // this is 0 if m_Size is not 1 (encoded in 32-bits)
                               // and non-zero only if m_Size is 1 (encoded in 64-bits)
+    AP4_UI64        offset_;
     bool            m_IsFull;
     AP4_UI08        m_Version;
     AP4_UI32        m_Flags;

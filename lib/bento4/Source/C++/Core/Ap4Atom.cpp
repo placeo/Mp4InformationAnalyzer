@@ -70,6 +70,7 @@ AP4_Atom::AP4_Atom(Type type, AP4_UI32 size /* = AP4_ATOM_HEADER_SIZE */) :
     m_Type(type),
     m_Size32(size),
     m_Size64(0),
+	offset_(0),
     m_IsFull(false),
     m_Version(0),
     m_Flags(0),
@@ -84,6 +85,7 @@ AP4_Atom::AP4_Atom(Type type, AP4_UI64 size, bool force_64) :
     m_Type(type),
     m_Size32(0),
     m_Size64(0),
+	offset_(0),
     m_IsFull(false),
     m_Version(0),
     m_Flags(0),
@@ -102,6 +104,7 @@ AP4_Atom::AP4_Atom(Type     type,
     m_Type(type),
     m_Size32(size),
     m_Size64(0),
+	offset_(0),
     m_IsFull(true),
     m_Version(version),
     m_Flags(flags),
@@ -120,6 +123,7 @@ AP4_Atom::AP4_Atom(Type     type,
     m_Type(type),
     m_Size32(0),
     m_Size64(0),
+	offset_(0),
     m_IsFull(true),
     m_Version(version),
     m_Flags(flags),
@@ -279,7 +283,8 @@ AP4_Atom::InspectHeader(AP4_AtomInspector& inspector)
                         m_Version,
                         m_Flags,
                         GetHeaderSize(),
-                        GetSize());
+                        GetSize(),
+						getOffset());
 
     return AP4_SUCCESS;
 }
@@ -813,7 +818,8 @@ AP4_PrintInspector::StartAtom(const char* name,
                               AP4_UI08    version,
                               AP4_UI32    flags,
                               AP4_Size    header_size,
-                              AP4_UI64    size)
+                              AP4_UI64    size,
+							  AP4_UI64    offset)
 {
     // write atom name
     char info[128];
@@ -1008,7 +1014,8 @@ AP4_JsonInspector::StartAtom(const char* name,
                              AP4_UI08    /*version*/,
                              AP4_UI32    /*flags*/,
                              AP4_Size    header_size,
-                             AP4_UI64    size)
+                             AP4_UI64    size,
+							 AP4_UI64    offset)
 {
     char prefix[256];
     AP4_MakePrefixString(m_Depth*2, prefix, sizeof(prefix));
@@ -1024,17 +1031,26 @@ AP4_JsonInspector::StartAtom(const char* name,
     }
     m_Stream->WriteString(prefix);
     m_Stream->WriteString("{\n");
+
     m_Stream->WriteString(prefix);
     m_Stream->WriteString("  \"name\":\"");
     m_Stream->WriteString(name);
     m_Stream->Write("\"", 1);
     m_Stream->WriteString(",\n");
+
     m_Stream->WriteString(prefix);
     m_Stream->WriteString("  \"header_size\":");
     char val[32];
     AP4_FormatString(val, sizeof(val), "%d", header_size);
     m_Stream->WriteString(val);
     m_Stream->WriteString(",\n");
+
+    m_Stream->WriteString(prefix);
+    m_Stream->WriteString("  \"offset\":");
+	AP4_FormatString(val, sizeof(val), "%llu", offset);
+	m_Stream->WriteString(val);
+	m_Stream->WriteString(",\n");
+
     m_Stream->WriteString(prefix);
     m_Stream->WriteString("  \"size\":");
     AP4_FormatString(val, sizeof(val), "%lld", size);
@@ -1071,7 +1087,7 @@ AP4_JsonInspector::StartDescriptor(const char* name,
                                    AP4_Size    header_size,
                                    AP4_UI64    size)
 {
-    StartAtom(name, 0, 0, header_size, size);
+    StartAtom(name, 0, 0, header_size, size, 0);
 }
 
 /*----------------------------------------------------------------------

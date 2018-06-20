@@ -228,6 +228,9 @@ AP4_AtomFactory::CreateAtomFromStream(AP4_ByteStream& stream,
         atom = new AP4_UnknownAtom(type, size, stream);
     }
 
+    // set offset
+    atom->setOffset(start);
+
     // special case: if the atom is poorly encoded and has a 64-bit
     // size header but an actual size that fits on 32-bit, adjust the
     // object to reflect that.

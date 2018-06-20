@@ -97,7 +97,8 @@ public:
                            AP4_UI08    /* version     */,
                            AP4_UI32    /* flags       */,
                            AP4_Size    /* header_size */,
-                           AP4_UI64    /*size         */) {}
+                           AP4_UI64    /*size         */,
+						   AP4_UI64    offset) {}
     virtual void EndAtom() {}
     virtual void StartDescriptor(const char* /* name        */,
                                  AP4_Size    /* header_size */,
@@ -142,7 +143,8 @@ public:
                    AP4_UI08    version,
                    AP4_UI32    flags,
                    AP4_Size    header_size,
-                   AP4_UI64    size);
+                   AP4_UI64    size,
+				   AP4_UI64    offset);
     void EndAtom();
     void StartDescriptor(const char* name,
                          AP4_Size    header_size,
@@ -172,7 +174,8 @@ public:
                    AP4_UI08    version,
                    AP4_UI32    flags,
                    AP4_Size    header_size,
-                   AP4_UI64    size);
+                   AP4_UI64    size,
+				   AP4_UI64    offset);
     void EndAtom();
     void StartDescriptor(const char* name,
                          AP4_Size    header_size,
