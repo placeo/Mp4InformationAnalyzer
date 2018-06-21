@@ -30,19 +30,19 @@ bool CMp4Structure::generateStructureTreeView() {
 	gtk_tree_store_append(GTK_TREE_STORE(structureTreeModel_), &iter, nullptr);
 	gtk_tree_store_set(GTK_TREE_STORE(structureTreeModel_), &iter, 0, CMediaAnalysisManager::getInstance()->getFileName().data(), -1);
 
-	gtk_tree_store_append(GTK_TREE_STORE(structureTreeModel_), &childIter, &iter);
-	gtk_tree_store_set(GTK_TREE_STORE(structureTreeModel_), &childIter, 0, "one", -1);
-	gtk_tree_store_append(GTK_TREE_STORE(structureTreeModel_), &childIter, &iter);
-	gtk_tree_store_set(GTK_TREE_STORE(structureTreeModel_), &childIter, 0, "two", -1);
+	for(auto level0Name : CMediaAnalysisManager::getInstance()->getLevel0NameVector()) {
+		gtk_tree_store_append(GTK_TREE_STORE(structureTreeModel_), &childIter, &iter);
+		gtk_tree_store_set(GTK_TREE_STORE(structureTreeModel_), &childIter, 0, level0Name.c_str(), -1);
+	}
 
+/*
 	gtk_tree_store_append(GTK_TREE_STORE(structureTreeModel_), &iter, nullptr);
 	gtk_tree_store_set(GTK_TREE_STORE(structureTreeModel_), &iter, 0, "second", -1);
-
 	gtk_tree_store_append(GTK_TREE_STORE(structureTreeModel_), &childIter, &iter);
 	gtk_tree_store_set(GTK_TREE_STORE(structureTreeModel_), &childIter, 0, "three", -1);
 	gtk_tree_store_append(GTK_TREE_STORE(structureTreeModel_), &childIter, &iter);
 	gtk_tree_store_set(GTK_TREE_STORE(structureTreeModel_), &childIter, 0, "four", -1);
-
+*/
 //	gtk_tree_view_collapse_all(GTK_TREE_VIEW(structureTreeView_));
 // 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(structureTreeView_), TRUE);
 
@@ -58,6 +58,7 @@ bool CMp4Structure::terminateStructureTreeView() {
 
 void CMp4Structure::treeViewSelectionCallback(GtkTreeSelection* treeSelection, GtkTreeModel* treeModel) {
 	TestInfo(LogTag, "%s routine", __FUNCTION__);
+
 }
 
 void CMp4Structure::treeRowActivatedCallback(GtkTreeView* treeView, GtkTreePath* treePath, GtkTreeViewColumn* column) {

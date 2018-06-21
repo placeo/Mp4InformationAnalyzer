@@ -6,6 +6,7 @@
  */
 
 #include <string>
+#include <vector>
 
 #ifndef SRC_MEDIAANALYSIS_CMEDIAANALYSISMANAGER_H_
 #define SRC_MEDIAANALYSIS_CMEDIAANALYSISMANAGER_H_
@@ -39,8 +40,8 @@ public:
 
 	bool generateMp4AnalysisJson();
 	bool extractFileName();
-	bool retrieveMediaInformation();
-	bool parseMediaInformation(const char* mediaInformation);
+	bool retrieveLevel0Name();
+	bool parseLevel0Name(const char* mediaInformation);
 
 	string getFileName() const {
 		return fileName_;
@@ -54,6 +55,10 @@ public:
 		return readJsonData_;
 	}
 
+	vector<string> getLevel0NameVector() const {
+		return level0NameVector_;
+	}
+
 private:
 	static CMediaAnalysisManager* pInstance_;
 	string fileLocation_ = "";
@@ -61,6 +66,7 @@ private:
 	string readJsonData_ = "";
 
 	int	firstLayerCount_ = 0;
+	vector<string> level0NameVector_;
 };
 
 #endif /* SRC_MEDIAANALYSIS_CMEDIAANALYSISMANAGER_H_ */

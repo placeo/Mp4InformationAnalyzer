@@ -20,6 +20,7 @@ CMediaAnalysisManager::CMediaAnalysisManager() {
 }
 
 CMediaAnalysisManager::~CMediaAnalysisManager() {
+	level0NameVector_.clear();
 	// TODO Auto-generated destructor stub
 }
 
@@ -56,7 +57,7 @@ bool CMediaAnalysisManager::generateMp4AnalysisJson() {
 
 	inspector = new AP4_JsonInspector(*output);
 
-	inspector->SetVerbosity(0);
+	inspector->SetVerbosity(4);
 
 	AP4_Atom* atom;
 	AP4_DefaultAtomFactory atom_factory;
@@ -94,7 +95,7 @@ bool CMediaAnalysisManager::extractFileName() {
 	return true;
 }
 
-bool CMediaAnalysisManager::retrieveMediaInformation() {
+bool CMediaAnalysisManager::retrieveLevel0Name() {
 	FILE* filePointer = NULL;
 	long int fileSize = 0;
 	int returnValue = 0;
@@ -128,7 +129,7 @@ bool CMediaAnalysisManager::retrieveMediaInformation() {
 		return false;
 	}
 
-	if(false == parseMediaInformation(configurationMessage)) {
+	if(false == parseLevel0Name(configurationMessage)) {
 		TestError(LogTag, "Mp4 information file parsing error");
 		if(0 != fclose(filePointer)) {
 			TestError(LogTag, "Mp4 information file closing error");
@@ -147,7 +148,7 @@ bool CMediaAnalysisManager::retrieveMediaInformation() {
 	return true;
 }
 
-bool CMediaAnalysisManager::parseMediaInformation(const char* mediaInformation) {
+bool CMediaAnalysisManager::parseLevel0Name(const char* mediaInformation) {
 	json_object* jsonData = json_tokener_parse(mediaInformation);
 	if(NULL == jsonData) {
 		TestError(LogTag, "Failed to tokenize json message");
@@ -170,6 +171,7 @@ bool CMediaAnalysisManager::parseMediaInformation(const char* mediaInformation) 
 			}
 			else {
 				Level0NameString = string(json_object_get_string(jsonFirstLayerName));
+				level0NameVector_.push_back(Level0NameString);
 				TestInfo(LogTag, "Level 0 name : %s", Level0NameString.data());
 			}
 		}

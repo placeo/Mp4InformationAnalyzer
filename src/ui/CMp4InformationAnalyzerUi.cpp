@@ -239,7 +239,7 @@ bool CMp4AnalyzerUi::loadFile(const char* openFileName, gpointer data) {
 		return false;
 	}
 
-	if(false == CMediaAnalysisManager::getInstance()->retrieveMediaInformation()) {
+	if(false == CMediaAnalysisManager::getInstance()->retrieveLevel0Name()) {
 		TestError(LogTag, "Failed to parse media information");
 	}
 
