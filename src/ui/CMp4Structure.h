@@ -24,8 +24,9 @@ public:
 private:
 	GtkWidget* scrolledWindow_ = nullptr;
 	GtkWidget* structureTreeView_ = nullptr;
-	GtkTreeStore* structureTreeModel_ = nullptr;
+	GtkTreeStore* structureTreeStore_ = nullptr;
 	GtkTreeSelection* treeSelection_ = nullptr;
+	GtkCellRenderer* cellRenderer_ = nullptr;
 };
 
 #endif /* SRC_UI_CMP4STRUCTURE_H_ */
