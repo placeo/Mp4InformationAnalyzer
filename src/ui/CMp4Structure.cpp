@@ -32,11 +32,13 @@ bool CMp4Structure::generateStructureTreeView() {
 	gtk_tree_model_get_iter_first(GTK_TREE_MODEL(structureTreeStore_), &iter);
 //	gtk_tree_selection_select_iter(GTK_TREE_SELECTION(treeSelection_), &iter);
 
+	g_object_set(cellRenderer_, "weight", PANGO_WEIGHT_BOLD, "weight-set", TRUE, NULL);
+
 	gtk_tree_store_append(GTK_TREE_STORE(structureTreeStore_), &iter, nullptr);
 	gtk_tree_store_set(GTK_TREE_STORE(structureTreeStore_), &iter, ATOME_NAME, CMediaAnalysisManager::getInstance()->getFileName().data(), -1);
 //	gtk_tree_store_set(GTK_TREE_STORE(structureTreeStore_), &iter, "weight", PANGO_WEIGHT_, -1);
 
-//	g_object_set(structureTreeStore_, "weight", PANGO_WEIGHT_NORMAL, "weight-set", TRUE, NULL);
+//	g_object_set(cellRenderer_, "weight", PANGO_WEIGHT_NORMAL, "weight-set", TRUE, NULL);
 
 	for(auto level0Name : CMediaAnalysisManager::getInstance()->getLevel0NameVector()) {
 		gtk_tree_store_append(GTK_TREE_STORE(structureTreeStore_), &childIter, &iter);
@@ -78,7 +80,7 @@ void CMp4Structure::treeRowActivatedCallback(GtkTreeView* treeView, GtkTreePath*
 }
 
 GtkWidget* CMp4Structure::initializeTreeView() {
-	GtkTreeViewColumn* titleColumn = nullptr;
+
 	GtkWidget* box = nullptr;
 	GtkWidget* label = nullptr;
 
@@ -93,11 +95,11 @@ GtkWidget* CMp4Structure::initializeTreeView() {
 	gtk_widget_set_size_request(structureTreeView_, -1, -1);
 
 	//titleColumn = gtk_tree_view_column_new_with_attributes("Structure", titleCell, "text", 0, nullptr);
-	titleColumn = gtk_tree_view_column_new();
+	structureColumn_ = gtk_tree_view_column_new();
 	cellRenderer_ = gtk_cell_renderer_text_new();
-	gtk_tree_view_column_pack_start(titleColumn, cellRenderer_, TRUE);
-	gtk_tree_view_column_add_attribute(titleColumn, cellRenderer_, "text", 0);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(structureTreeView_), GTK_TREE_VIEW_COLUMN(titleColumn));
+	gtk_tree_view_column_pack_start(structureColumn_, cellRenderer_, TRUE);
+	gtk_tree_view_column_add_attribute(structureColumn_, cellRenderer_, "text", 0);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(structureTreeView_), GTK_TREE_VIEW_COLUMN(structureColumn_));
 
 	g_signal_connect(structureTreeView_, "row_activated", G_CALLBACK(CMp4Structure::treeRowActivatedCallback), structureTreeStore_);
 	g_signal_connect(treeSelection_, "changed", G_CALLBACK(CMp4Structure::treeViewSelectionCallback), structureTreeStore_);

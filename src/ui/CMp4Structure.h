@@ -27,6 +27,7 @@ private:
 	GtkTreeStore* structureTreeStore_ = nullptr;
 	GtkTreeSelection* treeSelection_ = nullptr;
 	GtkCellRenderer* cellRenderer_ = nullptr;
+	GtkTreeViewColumn* structureColumn_ = nullptr;
 };
 
 #endif /* SRC_UI_CMP4STRUCTURE_H_ */
