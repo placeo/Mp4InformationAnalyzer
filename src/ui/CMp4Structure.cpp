@@ -40,10 +40,10 @@ bool CMp4Structure::generateStructureTreeView() {
 
 //	g_object_set(cellRenderer_, "weight", PANGO_WEIGHT_NORMAL, "weight-set", TRUE, NULL);
 
-	for(auto level0Name : CMediaAnalysisManager::getInstance()->getLevel0NameVector()) {
-		gtk_tree_store_append(GTK_TREE_STORE(structureTreeStore_), &childIter, &iter);
-		gtk_tree_store_set(GTK_TREE_STORE(structureTreeStore_), &childIter, ATOME_NAME, level0Name.c_str(), -1);
-	}
+//	for(auto level0Name : CMediaAnalysisManager::getInstance()->getLevel0NameVector()) {
+//		gtk_tree_store_append(GTK_TREE_STORE(structureTreeStore_), &childIter, &iter);
+//		gtk_tree_store_set(GTK_TREE_STORE(structureTreeStore_), &childIter, ATOME_NAME, level0Name.c_str(), -1);
+//	}
 
 /*
 	gtk_tree_store_append(GTK_TREE_STORE(structureTreeModel_), &iter, nullptr);

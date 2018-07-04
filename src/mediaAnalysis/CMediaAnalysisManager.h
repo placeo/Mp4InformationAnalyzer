@@ -6,8 +6,9 @@
  */
 
 #include <string>
-#include <vector>
+// #include <vector>
 #include <unordered_map>
+#include <json-c/json.h>
 
 #ifndef SRC_MEDIAANALYSIS_CMEDIAANALYSISMANAGER_H_
 #define SRC_MEDIAANALYSIS_CMEDIAANALYSISMANAGER_H_
@@ -44,6 +45,7 @@ public:
 	bool retrieveLevel0Name();
 	bool parseLevel0Name(const char* mediaInformation);
 	bool parseAtoms(const char* mediaInformation);
+	bool parseChildAtoms(json_object* layerObject, int levelCount, string atomPath);
 
 	string getFileName() const {
 		return fileName_;
@@ -57,9 +59,9 @@ public:
 		return readJsonData_;
 	}
 
-	vector<string> getLevel0NameVector() const {
-		return level0NameVector_;
-	}
+//	vector<string> getLevel0NameVector() const {
+//		return level0NameVector_;
+//	}
 
 private:
 	static CMediaAnalysisManager* pInstance_;
@@ -67,8 +69,9 @@ private:
 	string fileName_ = "";
 	string readJsonData_ = "";
 
-	vector<string> level0NameVector_;
-//	unordered_map<string, json_object> atomMap_;
+//	vector<string> level0NameVector_;
+	json_object* fullAtomsJsonObject_ = NULL;
+	unordered_map<string, json_object*> atomMap_; // path string, json_object
 };
 
 #endif /* SRC_MEDIAANALYSIS_CMEDIAANALYSISMANAGER_H_ */
