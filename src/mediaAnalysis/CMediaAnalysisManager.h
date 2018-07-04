@@ -7,7 +7,7 @@
 
 #include <string>
 // #include <vector>
-#include <unordered_map>
+#include <map>
 #include <json-c/json.h>
 
 #ifndef SRC_MEDIAANALYSIS_CMEDIAANALYSISMANAGER_H_
@@ -59,6 +59,10 @@ public:
 		return readJsonData_;
 	}
 
+	map<string, json_object*>& getAtomMap() {
+		return atomMap_;
+	}
+
 //	vector<string> getLevel0NameVector() const {
 //		return level0NameVector_;
 //	}
@@ -70,8 +74,8 @@ private:
 	string readJsonData_ = "";
 
 //	vector<string> level0NameVector_;
-	json_object* fullAtomsJsonObject_ = NULL;
-	unordered_map<string, json_object*> atomMap_; // path string, json_object
+	json_object* fullAtomsJsonObject_ = nullptr;
+	map<string, json_object*> atomMap_; // path string, json_object
 };
 
 #endif /* SRC_MEDIAANALYSIS_CMEDIAANALYSISMANAGER_H_ */

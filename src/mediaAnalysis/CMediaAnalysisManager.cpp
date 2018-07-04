@@ -19,7 +19,7 @@ CMediaAnalysisManager::CMediaAnalysisManager() {
 }
 
 CMediaAnalysisManager::~CMediaAnalysisManager() {
-	// level0NameVector_.clear();
+	if(fullAtomsJsonObject_ != nullptr) json_object_put(fullAtomsJsonObject_);
 	// TODO Auto-generated destructor stub
 }
 
@@ -202,6 +202,7 @@ bool CMediaAnalysisManager::parseChildAtoms(json_object* layerObject, int levelC
 				return false;
 			}
 			else {
+				atomMap_[revisedAtomPath] = jsonChildLayerObject;
 				atomNameString = string(json_object_get_string(jsonChildLayerNameObject));
 				// Insert to tree view
 				TestInfo(LogTag, "Level : %d, path : %s, name : %s", levelCount, revisedAtomPath.c_str(), atomNameString.data());
@@ -238,6 +239,7 @@ bool CMediaAnalysisManager::parseAtoms(const char* mediaInformation) {
 				return false;
 			}
 			else {
+				atomMap_[revisedAtomPath] = jsonFirstLayerObject;
 				atomNameString = string(json_object_get_string(jsonFirstLayerNameObject));
 //				level0NameVector_.push_back(atomNameString);
 				TestInfo(LogTag, "Level : %d, path : %s, name : %s", levelCount, revisedAtomPath.c_str(), atomNameString.data());

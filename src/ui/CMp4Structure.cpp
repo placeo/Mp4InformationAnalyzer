@@ -36,6 +36,24 @@ bool CMp4Structure::generateStructureTreeView() {
 
 	gtk_tree_store_append(GTK_TREE_STORE(structureTreeStore_), &iter, nullptr);
 	gtk_tree_store_set(GTK_TREE_STORE(structureTreeStore_), &iter, ATOME_NAME, CMediaAnalysisManager::getInstance()->getFileName().data(), -1);
+
+	int previousAtomPathLength = 3;
+
+	for(auto atom : CMediaAnalysisManager::getInstance()->getAtomMap()) {
+		json_object* nameObject = nullptr;
+		string atomName;
+		if(0 == json_object_object_get_ex(atom.second, "name", &nameObject)) {
+			TestWarning(LogTag, "Failed to get atom name");
+		}
+		else {
+			atomName = string(json_object_get_string(nameObject));
+		}
+
+		gtk_tree_store_append(GTK_TREE_STORE(structureTreeStore_), &childIter, &iter);
+		gtk_tree_store_set(GTK_TREE_STORE(structureTreeStore_), &childIter, ATOME_NAME, atomName.c_str(), -1);
+
+		TestInfo(LogTag, "Path : %s, path length : %d, Name : %s", atom.first.c_str(), atom.first.length(), atomName.c_str());
+	}
 //	gtk_tree_store_set(GTK_TREE_STORE(structureTreeStore_), &iter, "weight", PANGO_WEIGHT_, -1);
 
 //	g_object_set(cellRenderer_, "weight", PANGO_WEIGHT_NORMAL, "weight-set", TRUE, NULL);
