@@ -122,7 +122,50 @@ void CMp4Structure::treeRowActivatedCallback(GtkTreeView* treeView, GtkTreePath*
 	gchar* treePathString = nullptr;
 	treePathString = gtk_tree_path_to_string(treePath);
 	TestInfo(LogTag, "Tree path string : %s", treePathString);
+
+	auto mapIter = CMediaAnalysisManager::getInstance()->getAtomMap().find(string(treePathString));
 	g_free(treePathString);
+
+	if(mapIter != CMediaAnalysisManager::getInstance()->getAtomMap().end()) {
+		json_object* atomJsonObjet = mapIter->second;
+		json_object* atomNameJsonObject = nullptr;
+		json_object* atomOffsetJsonObject = nullptr;
+		json_object* atomSizeJsonObject = nullptr;
+		string atomName;
+		long long int atomOffset;
+		long long int atomSize;
+
+		if(0 == json_object_object_get_ex(atomJsonObjet, "name", &atomNameJsonObject)) {
+			TestError(LogTag, "Failed to get atom name");
+			return;
+		}
+		else {
+			atomName = string(json_object_get_string(atomNameJsonObject));
+			TestInfo(LogTag, "retrieved atom name : %s", atomName.c_str());
+		}
+
+		if(0 == json_object_object_get_ex(atomJsonObjet, "offset", &atomOffsetJsonObject)) {
+			TestError(LogTag, "Failed to get atom offset");
+			return;
+		}
+		else {
+			atomOffset = json_object_get_int64(atomOffsetJsonObject);
+			TestInfo(LogTag, "retrieved atom offset : %lld", atomOffset);
+		}
+
+		if(0 == json_object_object_get_ex(atomJsonObjet, "size", &atomSizeJsonObject)) {
+			TestError(LogTag, "Failed to get atom size");
+			return;
+		}
+		else {
+			atomSize = json_object_get_int64(atomSizeJsonObject);
+			TestInfo(LogTag, "retrieved atom size : %lld", atomSize);
+		}
+	}
+	else {
+		TestError(LogTag, "Failed to retrieve tree iterator");
+		return;
+	}
 }
 
 GtkWidget* CMp4Structure::initializeTreeView() {
