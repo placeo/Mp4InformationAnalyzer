@@ -26,61 +26,89 @@ CMp4Structure::~CMp4Structure() {
 }
 
 bool CMp4Structure::generateStructureTreeView() {
-	GtkTreeIter iter;
-	GtkTreeIter childIter;
+	GtkTreeIter rootIter;
+	GtkTreeIter rootChildIter;
 
-	gtk_tree_model_get_iter_first(GTK_TREE_MODEL(structureTreeStore_), &iter);
+	gtk_tree_model_get_iter_first(GTK_TREE_MODEL(structureTreeStore_), &rootIter);
 //	gtk_tree_selection_select_iter(GTK_TREE_SELECTION(treeSelection_), &iter);
 
 	g_object_set(cellRenderer_, "weight", PANGO_WEIGHT_BOLD, "weight-set", TRUE, NULL);
 
-	gtk_tree_store_append(GTK_TREE_STORE(structureTreeStore_), &iter, nullptr);
-	gtk_tree_store_set(GTK_TREE_STORE(structureTreeStore_), &iter, ATOME_NAME, CMediaAnalysisManager::getInstance()->getFileName().data(), -1);
+	gtk_tree_store_append(GTK_TREE_STORE(structureTreeStore_), &rootIter, nullptr);
+	gtk_tree_store_set(GTK_TREE_STORE(structureTreeStore_), &rootIter, ATOME_NAME, CMediaAnalysisManager::getInstance()->getFileName().data(), -1);
 
-	int previousAtomPathLength = 3;
+	int comparingAtomPathLength = 3;
+	int maxAtomPathLength = 0;
 
 	for(auto atom : CMediaAnalysisManager::getInstance()->getAtomMap()) {
-		json_object* nameObject = nullptr;
+		json_object* jsonNameObject = nullptr;
 		string atomName;
-		if(0 == json_object_object_get_ex(atom.second, "name", &nameObject)) {
-			TestWarning(LogTag, "Failed to get atom name");
+		if(atom.first.length() == comparingAtomPathLength) {
+			if(0 == json_object_object_get_ex(atom.second, "name", &jsonNameObject)) {
+				TestError(LogTag, "Failed to get atom name");
+				return false;
+			}
+			else {
+				atomName = string(json_object_get_string(jsonNameObject));
+				gtk_tree_store_append(GTK_TREE_STORE(structureTreeStore_), &rootChildIter, &rootIter);
+				gtk_tree_store_set(GTK_TREE_STORE(structureTreeStore_), &rootChildIter, ATOME_NAME, atomName.c_str(), -1);
+				TestInfo(LogTag, "Add atom name to sub tree iterator map : %s, key :%s", atomName.c_str(), atom.first.c_str());
+				subTreeIteratorMap_[atom.first] = rootChildIter;
+			}
 		}
-		else {
-			atomName = string(json_object_get_string(nameObject));
-		}
-
-		gtk_tree_store_append(GTK_TREE_STORE(structureTreeStore_), &childIter, &iter);
-		gtk_tree_store_set(GTK_TREE_STORE(structureTreeStore_), &childIter, ATOME_NAME, atomName.c_str(), -1);
-
-		TestInfo(LogTag, "Path : %s, path length : %d, Name : %s", atom.first.c_str(), atom.first.length(), atomName.c_str());
+		if(atom.first.length() > maxAtomPathLength) maxAtomPathLength = atom.first.length();
 	}
-//	gtk_tree_store_set(GTK_TREE_STORE(structureTreeStore_), &iter, "weight", PANGO_WEIGHT_, -1);
 
-//	g_object_set(cellRenderer_, "weight", PANGO_WEIGHT_NORMAL, "weight-set", TRUE, NULL);
-
-//	for(auto level0Name : CMediaAnalysisManager::getInstance()->getLevel0NameVector()) {
-//		gtk_tree_store_append(GTK_TREE_STORE(structureTreeStore_), &childIter, &iter);
-//		gtk_tree_store_set(GTK_TREE_STORE(structureTreeStore_), &childIter, ATOME_NAME, level0Name.c_str(), -1);
-//	}
-
-/*
-	gtk_tree_store_append(GTK_TREE_STORE(structureTreeModel_), &iter, nullptr);
-	gtk_tree_store_set(GTK_TREE_STORE(structureTreeModel_), &iter, 0, "second", -1);
-	gtk_tree_store_append(GTK_TREE_STORE(structureTreeModel_), &childIter, &iter);
-	gtk_tree_store_set(GTK_TREE_STORE(structureTreeModel_), &childIter, 0, "three", -1);
-	gtk_tree_store_append(GTK_TREE_STORE(structureTreeModel_), &childIter, &iter);
-	gtk_tree_store_set(GTK_TREE_STORE(structureTreeModel_), &childIter, 0, "four", -1);
-*/
-//	gtk_tree_view_collapse_all(GTK_TREE_VIEW(structureTreeView_));
-// 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(structureTreeView_), TRUE);
+	generateStructureSubTreeView(subTreeIteratorMap_, CMediaAnalysisManager::getInstance()->getAtomMap(), comparingAtomPathLength + 2, maxAtomPathLength);
 
 	gtk_widget_grab_focus(structureTreeView_);
 
 	return true;
 }
 
+bool CMp4Structure::generateStructureSubTreeView(	map<string, GtkTreeIter>& subTreeIteratorMap, map<string, json_object*>& atomMap, int comparingAtomPathLength, int maxAtomPathLength) {
+	GtkTreeIter subIter;
+	GtkTreeIter subChildIter;
+
+	for(auto atom : atomMap) {
+		json_object* jsonNameObject = nullptr;
+		string atomName;
+		if(atom.first.length() == comparingAtomPathLength) {
+			TestInfo(LogTag, "atom tree path string : %s", atom.first.substr(0, comparingAtomPathLength - 2).c_str());
+			auto mapIter = subTreeIteratorMap.find(atom.first.substr(0, comparingAtomPathLength - 2)) ;
+			if(mapIter != subTreeIteratorMap.end()) {
+				if(0 == json_object_object_get_ex(atom.second, "name", &jsonNameObject)) {
+					TestError(LogTag, "Failed to get atom name");
+					return false;
+				}
+				else {
+
+					atomName = string(json_object_get_string(jsonNameObject));
+					TestInfo(LogTag, "retrieved atom name : %s", atomName.c_str());
+					subIter = mapIter->second;
+					gtk_tree_store_append(GTK_TREE_STORE(structureTreeStore_), &subChildIter, &subIter);
+					gtk_tree_store_set(GTK_TREE_STORE(structureTreeStore_), &subChildIter, ATOME_NAME, atomName.c_str(), -1);
+					subTreeIteratorMap[atom.first] = subChildIter;
+				}
+			}
+			else {
+				TestError(LogTag, "Failed to retrieve tree iterator");
+				return false;
+			}
+		}
+	}
+	comparingAtomPathLength += 2;
+	if(comparingAtomPathLength > maxAtomPathLength || false == generateStructureSubTreeView(subTreeIteratorMap, atomMap, comparingAtomPathLength, maxAtomPathLength)) {
+		TestWarning(LogTag, "Failed to get sub tree view");
+		return false;
+	}
+	return true;
+}
+
 bool CMp4Structure::terminateStructureTreeView() {
 	gtk_tree_store_clear (structureTreeStore_);
+	subTreeIteratorMap_.clear();
+	CMediaAnalysisManager::getInstance()->getAtomMap().clear();
 	return true;
 }
 
