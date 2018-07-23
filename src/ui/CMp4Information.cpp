@@ -37,29 +37,37 @@ CMp4Information::~CMp4Information() {
 	// TODO Auto-generated destructor stub
 }
 
-GtkWidget* CMp4Information::generateMp4InformationView() {
-	GtkWidget* box = nullptr;
+GtkWidget* CMp4Information::initializeMp4InformationView() {
 	GtkWidget* label = nullptr;
 	GdkPixbuf* logoPixBuf = nullptr;
 	GtkWidget* drawingArea = gtk_drawing_area_new();
 
 	scrolledWindow_ = gtk_scrolled_window_new(NULL, NULL);
 
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledWindow_), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+//	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledWindow_), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	logoPixBuf = gdk_pixbuf_new_from_xpm_data((const gchar **)mp4InformationAnalyzerLogo);
 
 	gtk_container_add(GTK_CONTAINER(scrolledWindow_), drawingArea);
 	label = gtk_label_new("Information");
-	box = gtk_notebook_new();
-	gtk_notebook_append_page(GTK_NOTEBOOK(box), scrolledWindow_, label);
+	box_ = gtk_notebook_new();
+	gtk_notebook_append_page(GTK_NOTEBOOK(box_), scrolledWindow_, label);
 
 	g_signal_connect(drawingArea, "draw", G_CALLBACK(drawCallback), logoPixBuf);
 
-	return box;
+	return box_;
 }
 
 bool CMp4Information::terminateMp4InformationView() {
 	return true;
+}
+
+GtkTreeModel* CMp4Information::generateMp4InformationWindow() {
+	GtkListStore* boxInformationListStore;
+	GtkTreeIter treeIter;
+	boxInformationListStore = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
+	gtk_list_store_append(boxInformationListStore, &treeIter);
+	gtk_list_store_set(boxInformationListStore, &treeIter, 0, "First", 1, "Second", -1);
+	return GTK_TREE_MODEL(boxInformationListStore);
 }
 
 gboolean CMp4Information::drawCallback(GtkWidget* widget, cairo_t* cr, gpointer data) {

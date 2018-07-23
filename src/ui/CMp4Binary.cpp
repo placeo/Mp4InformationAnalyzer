@@ -21,7 +21,7 @@ GtkWidget* CMp4Binary::generateBinaryView() {
 	GtkWidget* label = nullptr;
 
 	scrolledWindow_ = gtk_scrolled_window_new(NULL, NULL);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledWindow_), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+//	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledWindow_), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	// gtk_container_add(GTK_CONTAINER(scrolledWindow_), structureTreeView_);
 
 	label = gtk_label_new("Binary");

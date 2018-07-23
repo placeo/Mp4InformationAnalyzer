@@ -117,7 +117,8 @@ void CMp4Structure::treeViewSelectionCallback(GtkTreeSelection* treeSelection, G
 
 }
 
-void CMp4Structure::treeRowActivatedCallback(GtkTreeView* treeView, GtkTreePath* treePath, GtkTreeViewColumn* column) {
+void CMp4Structure::treeRowActivatedCallback(GtkTreeView* treeView, GtkTreePath* treePath, GtkTreeViewColumn* column, gpointer userData) {
+	CMp4Structure* mp4Structure = static_cast<CMp4Structure*>(userData);
 	TestInfo(LogTag, "%s routine", __FUNCTION__);
 	gchar* treePathString = nullptr;
 	treePathString = gtk_tree_path_to_string(treePath);
@@ -161,6 +162,20 @@ void CMp4Structure::treeRowActivatedCallback(GtkTreeView* treeView, GtkTreePath*
 			atomSize = json_object_get_int64(atomSizeJsonObject);
 			TestInfo(LogTag, "retrieved atom size : %lld", atomSize);
 		}
+
+		// gtk_window_close((GTK_SCROLLED_WINDOW(mp4Structure->getMp4Information()->getScrolledWindow())));
+		if(mp4Structure->getMp4Information()->getScrolledWindow() != nullptr) {
+			TestInfo(LogTag, "Displaying mp4 information");
+			GtkWidget* mp4InformationBox;
+			GtkTreeModel* mp4InformationTreeModel;
+			GtkWidget* mp4InformationTreeView;
+			gtk_widget_destroy(GTK_WIDGET(mp4Structure->getMp4Information()->getScrolledWindow()));
+			// mp4Structure->getMp4Information()->setScrolledWindow(nullptr);
+			mp4InformationBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+			mp4InformationTreeModel = mp4Structure->getMp4Information()->generateMp4InformationWindow();
+			mp4InformationTreeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(mp4InformationTreeModel));
+			mp4Structure->getMp4Information()->setScrolledWindow(gtk_scrolled_window_new(nullptr, nullptr));
+		}
 	}
 	else {
 		TestError(LogTag, "Failed to retrieve tree iterator");
@@ -190,7 +205,7 @@ GtkWidget* CMp4Structure::initializeTreeView() {
 	gtk_tree_view_column_add_attribute(structureColumn_, cellRenderer_, "text", 0);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(structureTreeView_), GTK_TREE_VIEW_COLUMN(structureColumn_));
 
-	g_signal_connect(structureTreeView_, "row_activated", G_CALLBACK(CMp4Structure::treeRowActivatedCallback), structureTreeStore_);
+	g_signal_connect(structureTreeView_, "row_activated", G_CALLBACK(CMp4Structure::treeRowActivatedCallback), this);
 	g_signal_connect(treeSelection_, "changed", G_CALLBACK(CMp4Structure::treeViewSelectionCallback), structureTreeStore_);
 
 //	gtk_tree_view_collapse_all(GTK_TREE_VIEW(structureTreeView_));

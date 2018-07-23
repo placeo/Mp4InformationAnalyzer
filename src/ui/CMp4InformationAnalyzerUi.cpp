@@ -33,8 +33,11 @@ void CMp4AnalyzerUi::createMainUi(CMp4AnalyzerUi* mp4AnalyzerUi) {
 	GtkWidget* toolbar = createToolBar(mp4AnalyzerUi);
 	GtkWidget* contentsBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
 	GtkWidget* structureView = mp4AnalyzerUi->mp4Structure_->initializeTreeView();
-	GtkWidget* informationView = mp4AnalyzerUi->mp4Information_->generateMp4InformationView();
+	GtkWidget* informationView = mp4AnalyzerUi->mp4Information_->initializeMp4InformationView();
 	GtkWidget* binaryView = mp4AnalyzerUi->mp4Binary_->generateBinaryView();
+
+	mp4AnalyzerUi->mp4Structure_->setMp4Information(mp4AnalyzerUi->mp4Information_);
+	mp4AnalyzerUi->mp4Structure_->setMp4Binary(mp4AnalyzerUi->mp4Binary_);
 
 	gtk_window_set_title(GTK_WINDOW(mp4AnalyzerUi->mainWindow_), "MP4 Information Analyzer");
     gtk_widget_set_size_request(GTK_WIDGET(mp4AnalyzerUi->mainWindow_), 900, 480);
