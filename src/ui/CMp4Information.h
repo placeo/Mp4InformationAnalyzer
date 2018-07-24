@@ -9,6 +9,9 @@
 #define SRC_UI_CMP4INFORMATION_H_
 
 #include <gtk/gtk.h>
+#include <string>
+
+using namespace std;
 
 class CMp4Information {
 public:
@@ -43,8 +46,8 @@ public:
 		drawingArea_ = drawingArea;
 	}
 
-	GtkWidget* createInformationView();
-	GtkTreeModel* createInformationModel();
+	GtkWidget* createInformationView(string atomName, long long int size, long long int offset);
+	GtkTreeModel* createInformationModel(string atomName, long long int size, long long int offset);
 
 private:
 	GtkWidget* scrolledWindow_ = nullptr;

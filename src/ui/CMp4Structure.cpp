@@ -176,7 +176,7 @@ void CMp4Structure::treeRowActivatedCallback(GtkTreeView* treeView, GtkTreePath*
 				gtk_container_remove(GTK_CONTAINER(mp4Structure->getMp4Information()->getScrolledWindow()), mp4Structure->mp4InformationBox_);
 			}
 			mp4Structure->mp4InformationHeader_ = gtk_label_new("Box");
-			mp4Structure->mp4InformationTreeView_ = mp4Structure->getMp4Information()->createInformationView();
+			mp4Structure->mp4InformationTreeView_ = mp4Structure->getMp4Information()->createInformationView(atomName, atomSize, atomOffset);
 
 			mp4Structure->mp4InformationBox_ = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 			gtk_box_pack_start(GTK_BOX(mp4Structure->mp4InformationBox_), mp4Structure->mp4InformationHeader_, FALSE, FALSE, 0);

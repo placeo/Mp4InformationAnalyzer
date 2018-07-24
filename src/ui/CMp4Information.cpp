@@ -101,7 +101,7 @@ gboolean CMp4Information::drawCallback(GtkWidget* widget, cairo_t* cr, gpointer 
 	return FALSE;
 }
 
-GtkWidget* CMp4Information::createInformationView() {
+GtkWidget* CMp4Information::createInformationView(string atomName, long long int size, long long int offset) {
 	GtkCellRenderer     *renderer;
 	GtkTreeModel        *model;
 	GtkWidget           *view;
@@ -128,7 +128,7 @@ GtkWidget* CMp4Information::createInformationView() {
 											   "text", 1,
 											   NULL);
 
-	model = createInformationModel();
+	model = createInformationModel(atomName, size, offset);
 
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(view), FALSE);
 	gtk_tree_view_set_model (GTK_TREE_VIEW (view), model);
@@ -142,27 +142,21 @@ GtkWidget* CMp4Information::createInformationView() {
 	return view;
 }
 
-GtkTreeModel* CMp4Information::createInformationModel() {
+GtkTreeModel* CMp4Information::createInformationModel(string atomName, long long int size, long long int offset) {
 	TestInfo(LogTag, "%s routine", __FUNCTION__);
 	GtkListStore* boxInformationListStore;
 	GtkTreeIter treeIter;
 	boxInformationListStore = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-	static int count = 0;
 
-	if(count == 0) {
-		gtk_list_store_append(boxInformationListStore, &treeIter);
-		gtk_list_store_set(boxInformationListStore, &treeIter, 0, "First", 1, "Second", -1);
 
-		gtk_list_store_append(boxInformationListStore, &treeIter);
-		gtk_list_store_set(boxInformationListStore, &treeIter, 0, "Third", 1, "Forth", -1);
-	}
-	else {
-		gtk_list_store_append(boxInformationListStore, &treeIter);
-		gtk_list_store_set(boxInformationListStore, &treeIter, 0, "Fifth", 1, "Sixth", -1);
+	gtk_list_store_append(boxInformationListStore, &treeIter);
+	gtk_list_store_set(boxInformationListStore, &treeIter, 0, "Box type", 1, atomName.c_str(), -1);
 
-		gtk_list_store_append(boxInformationListStore, &treeIter);
-		gtk_list_store_set(boxInformationListStore, &treeIter, 0, "Seventh", 1, "Eighth", -1);
-	}
-	count++;
+	gtk_list_store_append(boxInformationListStore, &treeIter);
+	gtk_list_store_set(boxInformationListStore, &treeIter, 0, "Box size", 1, to_string(size).c_str(), -1);
+
+	gtk_list_store_append(boxInformationListStore, &treeIter);
+	gtk_list_store_set(boxInformationListStore, &treeIter, 0, "Start offset", 1, to_string(offset).c_str(), -1);
+
 	return GTK_TREE_MODEL(boxInformationListStore);
 }
