@@ -35,9 +35,21 @@ public:
 		box_ = box;
 	}
 
+	GtkWidget* getDrawingArea() const {
+		return drawingArea_;
+	}
+
+	void setDrawingArea(GtkWidget* drawingArea) {
+		drawingArea_ = drawingArea;
+	}
+
+	GtkWidget* createInformationView();
+	GtkTreeModel* createInformationModel();
+
 private:
 	GtkWidget* scrolledWindow_ = nullptr;
 	GtkWidget* box_ = nullptr;
+	GtkWidget* drawingArea_ = nullptr;
 };
 
 #endif /* SRC_UI_CMP4INFORMATION_H_ */

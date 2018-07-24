@@ -7,7 +7,10 @@
 
 #include <cairo/cairo.h>
 #include "CMp4Information.h"
+#include "CMp4AnalyzerLogger.h"
 #include "xmp.h"
+
+static const char* LogTag = "MP4_INFORMATION";
 
 static void
 oval_path (cairo_t *cr,
@@ -40,19 +43,19 @@ CMp4Information::~CMp4Information() {
 GtkWidget* CMp4Information::initializeMp4InformationView() {
 	GtkWidget* label = nullptr;
 	GdkPixbuf* logoPixBuf = nullptr;
-	GtkWidget* drawingArea = gtk_drawing_area_new();
+	drawingArea_ = gtk_drawing_area_new();
 
 	scrolledWindow_ = gtk_scrolled_window_new(NULL, NULL);
 
 //	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledWindow_), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	logoPixBuf = gdk_pixbuf_new_from_xpm_data((const gchar **)mp4InformationAnalyzerLogo);
 
-	gtk_container_add(GTK_CONTAINER(scrolledWindow_), drawingArea);
+	gtk_container_add(GTK_CONTAINER(scrolledWindow_), drawingArea_);
 	label = gtk_label_new("Information");
 	box_ = gtk_notebook_new();
 	gtk_notebook_append_page(GTK_NOTEBOOK(box_), scrolledWindow_, label);
 
-	g_signal_connect(drawingArea, "draw", G_CALLBACK(drawCallback), logoPixBuf);
+	g_signal_connect(drawingArea_, "draw", G_CALLBACK(drawCallback), logoPixBuf);
 
 	return box_;
 }
@@ -62,12 +65,7 @@ bool CMp4Information::terminateMp4InformationView() {
 }
 
 GtkTreeModel* CMp4Information::generateMp4InformationWindow() {
-	GtkListStore* boxInformationListStore;
-	GtkTreeIter treeIter;
-	boxInformationListStore = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-	gtk_list_store_append(boxInformationListStore, &treeIter);
-	gtk_list_store_set(boxInformationListStore, &treeIter, 0, "First", 1, "Second", -1);
-	return GTK_TREE_MODEL(boxInformationListStore);
+
 }
 
 gboolean CMp4Information::drawCallback(GtkWidget* widget, cairo_t* cr, gpointer data) {
@@ -101,4 +99,70 @@ gboolean CMp4Information::drawCallback(GtkWidget* widget, cairo_t* cr, gpointer 
 	cairo_surface_destroy (overlay);
 
 	return FALSE;
+}
+
+GtkWidget* CMp4Information::createInformationView() {
+	GtkCellRenderer     *renderer;
+	GtkTreeModel        *model;
+	GtkWidget           *view;
+
+	view = gtk_tree_view_new ();
+
+	/* --- Column #1 --- */
+
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),
+											   -1,
+											   "First",
+											   renderer,
+											   "text", 0,
+											   NULL);
+
+	/* --- Column #2 --- */
+
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),
+											   -1,
+											   "Second",
+											   renderer,
+											   "text", 1,
+											   NULL);
+
+	model = createInformationModel();
+
+	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(view), FALSE);
+	gtk_tree_view_set_model (GTK_TREE_VIEW (view), model);
+
+	/* The tree view has acquired its own reference to the
+	*  model, so we can drop ours. That way the model will
+	*  be freed automatically when the tree view is destroyed */
+
+	g_object_unref (model);
+
+	return view;
+}
+
+GtkTreeModel* CMp4Information::createInformationModel() {
+	TestInfo(LogTag, "%s routine", __FUNCTION__);
+	GtkListStore* boxInformationListStore;
+	GtkTreeIter treeIter;
+	boxInformationListStore = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
+	static int count = 0;
+
+	if(count == 0) {
+		gtk_list_store_append(boxInformationListStore, &treeIter);
+		gtk_list_store_set(boxInformationListStore, &treeIter, 0, "First", 1, "Second", -1);
+
+		gtk_list_store_append(boxInformationListStore, &treeIter);
+		gtk_list_store_set(boxInformationListStore, &treeIter, 0, "Third", 1, "Forth", -1);
+	}
+	else {
+		gtk_list_store_append(boxInformationListStore, &treeIter);
+		gtk_list_store_set(boxInformationListStore, &treeIter, 0, "Fifth", 1, "Sixth", -1);
+
+		gtk_list_store_append(boxInformationListStore, &treeIter);
+		gtk_list_store_set(boxInformationListStore, &treeIter, 0, "Seventh", 1, "Eighth", -1);
+	}
+	count++;
+	return GTK_TREE_MODEL(boxInformationListStore);
 }

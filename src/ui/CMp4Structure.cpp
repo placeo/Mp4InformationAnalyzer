@@ -167,14 +167,23 @@ void CMp4Structure::treeRowActivatedCallback(GtkTreeView* treeView, GtkTreePath*
 		if(mp4Structure->getMp4Information()->getScrolledWindow() != nullptr) {
 			TestInfo(LogTag, "Displaying mp4 information");
 			GtkWidget* mp4InformationBox;
-			GtkTreeModel* mp4InformationTreeModel;
-			GtkWidget* mp4InformationTreeView;
-			gtk_widget_destroy(GTK_WIDGET(mp4Structure->getMp4Information()->getScrolledWindow()));
-			// mp4Structure->getMp4Information()->setScrolledWindow(nullptr);
-			mp4InformationBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-			mp4InformationTreeModel = mp4Structure->getMp4Information()->generateMp4InformationWindow();
-			mp4InformationTreeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(mp4InformationTreeModel));
-			mp4Structure->getMp4Information()->setScrolledWindow(gtk_scrolled_window_new(nullptr, nullptr));
+
+			if(mp4Structure->getMp4Information()->getDrawingArea() != nullptr) {
+				gtk_container_remove(GTK_CONTAINER(mp4Structure->getMp4Information()->getScrolledWindow()), mp4Structure->getMp4Information()->getDrawingArea());
+				mp4Structure->getMp4Information()->setDrawingArea(nullptr);
+			}
+			else {
+				gtk_container_remove(GTK_CONTAINER(mp4Structure->getMp4Information()->getScrolledWindow()), mp4Structure->mp4InformationBox_);
+			}
+			mp4Structure->mp4InformationHeader_ = gtk_label_new("Box");
+			mp4Structure->mp4InformationTreeView_ = mp4Structure->getMp4Information()->createInformationView();
+
+			mp4Structure->mp4InformationBox_ = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+			gtk_box_pack_start(GTK_BOX(mp4Structure->mp4InformationBox_), mp4Structure->mp4InformationHeader_, FALSE, FALSE, 0);
+			gtk_box_pack_start(GTK_BOX(mp4Structure->mp4InformationBox_), mp4Structure->mp4InformationTreeView_, FALSE, FALSE, 0);
+			gtk_container_add(GTK_CONTAINER(mp4Structure->getMp4Information()->getScrolledWindow()), mp4Structure->mp4InformationBox_);
+			gtk_widget_show_all(mp4Structure->getMp4Information()->getScrolledWindow());
+//			mp4Structure->getMp4Information()->setScrolledWindow(gtk_scrolled_window_new(nullptr, nullptr));
 		}
 	}
 	else {

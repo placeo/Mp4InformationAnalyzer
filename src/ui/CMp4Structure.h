@@ -54,6 +54,9 @@ private:
 	map<string, GtkTreeIter> subTreeIteratorMap_;
 	CMp4Information* mp4Information_ = nullptr;
 	CMp4Binary* mp4Binary_ = nullptr;
+	GtkWidget* mp4InformationTreeView_ = nullptr;
+	GtkWidget* mp4InformationHeader_ = nullptr;
+	GtkWidget* mp4InformationBox_ = nullptr;
 };
 
 #endif /* SRC_UI_CMP4STRUCTURE_H_ */
