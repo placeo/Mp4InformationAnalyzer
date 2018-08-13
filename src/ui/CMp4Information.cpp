@@ -101,6 +101,7 @@ gboolean CMp4Information::drawCallback(GtkWidget* widget, cairo_t* cr, gpointer 
 	return FALSE;
 }
 
+
 GtkWidget* CMp4Information::createInformationView(string atomName, long long int size, long long int offset) {
 	GtkCellRenderer     *renderer;
 	GtkTreeModel        *model;
@@ -131,6 +132,7 @@ GtkWidget* CMp4Information::createInformationView(string atomName, long long int
 	model = createInformationModel(atomName, size, offset);
 
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(view), FALSE);
+	gtk_tree_view_set_grid_lines(GTK_TREE_VIEW (view), GTK_TREE_VIEW_GRID_LINES_VERTICAL);
 	gtk_tree_view_set_model (GTK_TREE_VIEW (view), model);
 
 	/* The tree view has acquired its own reference to the
