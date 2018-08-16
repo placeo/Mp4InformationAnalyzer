@@ -166,7 +166,6 @@ void CMp4Structure::treeRowActivatedCallback(GtkTreeView* treeView, GtkTreePath*
 		// gtk_window_close((GTK_SCROLLED_WINDOW(mp4Structure->getMp4Information()->getScrolledWindow())));
 		if(mp4Structure->getMp4Information()->getScrolledWindow() != nullptr) {
 			TestInfo(LogTag, "Displaying mp4 information");
-			GtkWidget* mp4InformationBox;
 
 			if(mp4Structure->getMp4Information()->getDrawingArea() != nullptr) {
 				gtk_container_remove(GTK_CONTAINER(mp4Structure->getMp4Information()->getScrolledWindow()), mp4Structure->getMp4Information()->getDrawingArea());
@@ -175,10 +174,30 @@ void CMp4Structure::treeRowActivatedCallback(GtkTreeView* treeView, GtkTreePath*
 			else {
 				gtk_container_remove(GTK_CONTAINER(mp4Structure->getMp4Information()->getScrolledWindow()), mp4Structure->mp4InformationBox_);
 			}
-			mp4Structure->mp4InformationHeader_ = gtk_label_new("Box");
+
+            /* styling background color to black */
+/*
+            GtkCssProvider* provider = gtk_css_provider_new();
+            GdkDisplay* display = gdk_display_get_default();
+            GdkScreen* screen = gdk_display_get_default_screen(display);
+
+
+            gtk_style_context_add_provider_for_screen(screen,
+                                                      GTK_STYLE_PROVIDER(provider),
+                                                      GTK_STYLE_PROVIDER_PRIORITY_USER);
+
+            gtk_css_provider_load_from_data(GTK_CSS_PROVIDER(provider),
+            		"GtkLabel { background-color: #AAAAAA;}"
+                 , -1, NULL);
+            g_object_unref(provider);
+*/
+            mp4Structure->mp4InformationHeader_ = gtk_label_new(NULL);
+            gtk_label_set_markup(GTK_LABEL(mp4Structure->mp4InformationHeader_), "<b>Atom</b>");
+
 			mp4Structure->mp4InformationTreeView_ = mp4Structure->getMp4Information()->createInformationView(atomName, atomSize, atomOffset);
 
-			mp4Structure->mp4InformationBox_ = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+			mp4Structure->mp4InformationBox_ = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
+			gtk_box_set_spacing(GTK_BOX(mp4Structure->mp4InformationBox_), 2);
 			gtk_box_pack_start(GTK_BOX(mp4Structure->mp4InformationBox_), mp4Structure->mp4InformationHeader_, FALSE, FALSE, 0);
 			gtk_box_pack_start(GTK_BOX(mp4Structure->mp4InformationBox_), mp4Structure->mp4InformationTreeView_, FALSE, FALSE, 0);
 			gtk_container_add(GTK_CONTAINER(mp4Structure->getMp4Information()->getScrolledWindow()), mp4Structure->mp4InformationBox_);

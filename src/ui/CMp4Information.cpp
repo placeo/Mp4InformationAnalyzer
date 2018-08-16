@@ -132,7 +132,7 @@ GtkWidget* CMp4Information::createInformationView(string atomName, long long int
 	model = createInformationModel(atomName, size, offset);
 
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(view), FALSE);
-	gtk_tree_view_set_grid_lines(GTK_TREE_VIEW (view), GTK_TREE_VIEW_GRID_LINES_VERTICAL);
+	gtk_tree_view_set_grid_lines(GTK_TREE_VIEW (view), GTK_TREE_VIEW_GRID_LINES_BOTH);
 	gtk_tree_view_set_model (GTK_TREE_VIEW (view), model);
 
 	/* The tree view has acquired its own reference to the
@@ -152,13 +152,13 @@ GtkTreeModel* CMp4Information::createInformationModel(string atomName, long long
 
 
 	gtk_list_store_append(boxInformationListStore, &treeIter);
-	gtk_list_store_set(boxInformationListStore, &treeIter, 0, "Box type", 1, atomName.c_str(), -1);
+	gtk_list_store_set(boxInformationListStore, &treeIter, 0, "atom type", 1, atomName.c_str(), -1);
 
 	gtk_list_store_append(boxInformationListStore, &treeIter);
-	gtk_list_store_set(boxInformationListStore, &treeIter, 0, "Box size", 1, to_string(size).c_str(), -1);
+	gtk_list_store_set(boxInformationListStore, &treeIter, 0, "atom size", 1, to_string(size).c_str(), -1);
 
 	gtk_list_store_append(boxInformationListStore, &treeIter);
-	gtk_list_store_set(boxInformationListStore, &treeIter, 0, "Start offset", 1, to_string(offset).c_str(), -1);
+	gtk_list_store_set(boxInformationListStore, &treeIter, 0, "atom offset", 1, to_string(offset).c_str(), -1);
 
 	return GTK_TREE_MODEL(boxInformationListStore);
 }
